@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "delicacy"
+version = "0.1.0"
+description = ""
+authors = ["nt54hamnghi <hamnghi250699@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.10.*"
+attrs = "22.1.*"
+bitstring = "3.1.*"
+lxml = "4.9.*"
+Pillow = "9.2.*"
+
+
+[tool.poetry.dev-dependencies]
+pytest = "7.1.*"
+black = "22.3.*"
+mypy = "^0.940"
+types-Pillow = "9.2.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
