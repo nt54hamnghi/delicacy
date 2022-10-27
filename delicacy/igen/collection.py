@@ -1,5 +1,5 @@
-from pathlib import Path
 from collections.abc import Iterable, Iterator
+from pathlib import Path
 
 from attrs import define, field
 
