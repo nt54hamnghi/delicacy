@@ -9,6 +9,7 @@ readme = "README.md"
 python = "3.10.*"
 attrs = "22.1.*"
 bitstring = "3.1.*"
+cytoolz = "0.12.*"
 lxml = "4.9.*"
 Pillow = "9.2.*"
 
