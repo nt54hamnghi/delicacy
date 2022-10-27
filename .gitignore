@@ -129,4 +129,5 @@ dmypy.json
 .pyre/
 
 # others
-/windows10/Users/hamng/Desktop/projects/delicacy/temp
+temp
+images
