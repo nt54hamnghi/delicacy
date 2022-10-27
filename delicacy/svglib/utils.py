@@ -17,4 +17,4 @@ def get_canvas(
     )
     tag |= kwds
     nsmap = dict(xlink="http://www.w3.org/1999/xlink")
-    return Element("svg", nsmap=nsmap, **tag)
+    return Element("svg", **tag, nsmap=nsmap)  # type: ignore

@@ -2,21 +2,22 @@ from typing import ClassVar
 
 from attrs import asdict, field, frozen
 from attrs.validators import and_, ge, in_, le
-from cytoolz.dicttoolz import valfilter
 
 
 class Style:
-    _main_property: str = ""
+    _main_property: ClassVar[str] = ""
 
     def __str__(self) -> str:
+        name = self.__class__.__name__.lower()
+        prop = self._main_property
+        keyfunc = lambda k: name if k == prop else f"{name}-{k}"  # noqa
 
-        _name = self.__class__.__name__.lower()
-        _dict = valfilter(lambda x: x is not None, asdict(self))
-        _keyfunc = (
-            lambda k: _name if k == self._main_property else f"{_name}-{k}"
+        result = (
+            f"{keyfunc(key)}: {val};"
+            for key, val in asdict(self).items()
+            if val is not None
         )
 
-        result = (f"{_keyfunc(key)}: {val};" for key, val in _dict.items())
         return " ".join(result)
 
 
@@ -43,7 +44,7 @@ class Stroke(Style):
             raise ValueError(
                 "miterlimit can only be set if linejoin is 'miter'"
             )
-        self.miterlimit = str(value)
+        self.miterlimit = value
 
 
 @frozen
