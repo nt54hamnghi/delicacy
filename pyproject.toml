@@ -18,6 +18,7 @@ Pillow = "9.2.*"
 pytest = "7.1.*"
 black = "22.3.*"
 mypy = "^0.940"
+lxml-stubs = "0.4.*"
 types-Pillow = "9.2.1"
 
 
