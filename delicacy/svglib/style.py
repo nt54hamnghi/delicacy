@@ -12,13 +12,11 @@ class Style:
         prop = self._main_property
         keyfunc = lambda k: name if k == prop else f"{name}-{k}"  # noqa
 
-        result = (
+        return " ".join(
             f"{keyfunc(key)}: {val};"
             for key, val in asdict(self).items()
             if val is not None
         )
-
-        return " ".join(result)
 
 
 @frozen
@@ -37,14 +35,15 @@ class Stroke(Style):
         default=None,
         validator=in_(("miter", "round", "bevel", None)),
     )
-    miterlimit: float | None = field(default=None, init=False)
+    miterlimit: float | None = field(default=None)
 
-    def set_miterlimit(self, value):
-        if self.linejoin != "miter":
-            raise ValueError(
-                "miterlimit can only be set if linejoin is 'miter'"
-            )
-        self.miterlimit = value
+    @miterlimit.validator
+    def _check_if_miter(self, attr, val: float | None) -> None:
+        if val is not None:
+            if self.linejoin != "miter":
+                raise ValueError(
+                    "miterlimit can only be set if linejoin is 'miter'"
+                )
 
 
 @frozen
