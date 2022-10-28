@@ -65,10 +65,10 @@ class ImageGenerator:
         self,
         layers: Iterator[Path],
         size: tuple[int, int] = (300, 300),
-        proprotion: float = 0.7,
+        proportion: float = 0.7,
     ) -> Image.Image:
         frame_size = fx, fy = (1024, 1024)
-        layer_size = lx, ly = int(fx * proprotion), int(fy * proprotion)
+        layer_size = lx, ly = int(fx * proportion), int(fy * proportion)
         box = (fx - lx) // 2, fy - ly
 
         frame = Image.new(mode="RGBA", size=frame_size)
@@ -81,7 +81,7 @@ class ImageGenerator:
         return frame.resize(size)
 
     def generate(
-        self, phrase: str, data: SupportStr, *args, **kwds
+        self, phrase: str, data: SupportStr = "", *args, **kwds
     ) -> Image.Image:
         seed = self._hash(phrase, data)
         layers = self._pick_layers(seed)
