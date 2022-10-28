@@ -1,3 +1,7 @@
+from operator import methodcaller
+from types import MethodType
+
+from decorator import decorator
 from lxml import etree
 from lxml.etree import Element, _Element
 
@@ -18,3 +22,11 @@ def get_canvas(
     tag |= kwds
     nsmap = dict(xlink="http://www.w3.org/1999/xlink")
     return Element("svg", **tag, nsmap=nsmap)  # type: ignore
+
+
+@decorator
+def chainable(method: MethodType, updater: str = "_update", *args, **kwds):
+    self = args[0]
+    value = method(*args, **kwds)
+    methodcaller(updater, value)(self)
+    return self
