@@ -1,12 +1,16 @@
-import hashlib
+from config import COLLECTION_DIR
 
-from config import COLLECTION_DIR, ROOT_DIR
+from delicacy.igen.collection import Collection
+from delicacy.igen.igen import ImageGenerator
 
 
 def main():
-    print(ROOT_DIR)
-    print(COLLECTION_DIR)
-    print(type(hashlib.sha512))
+    robot_collection = Collection("Robot", COLLECTION_DIR / "robot")
+    print(robot_collection)
+
+    img_gen = ImageGenerator(robot_collection)
+    my_img = img_gen.generate("hamnghi", size=(512, 512), proportion=0.85)
+    my_img.show()
 
 
 if __name__ == "__main__":
