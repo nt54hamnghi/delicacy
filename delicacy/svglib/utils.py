@@ -1,5 +1,6 @@
 from operator import methodcaller
 from types import MethodType
+from typing import NamedTuple
 
 from decorator import decorator
 from lxml import etree
@@ -21,7 +22,7 @@ def get_canvas(
     )
     tag |= kwds
     nsmap = dict(xlink="http://www.w3.org/1999/xlink")
-    return Element("svg", **tag, nsmap=nsmap)  # type: ignore
+    return Element("svg", attrib=tag, nsmap=nsmap)
 
 
 @decorator
@@ -30,3 +31,8 @@ def chainable(method: MethodType, updater: str = "_update", *args, **kwds):
     value = method(*args, **kwds)
     methodcaller(updater, value)(self)
     return self
+
+
+class Size(NamedTuple):
+    width: int
+    height: int
