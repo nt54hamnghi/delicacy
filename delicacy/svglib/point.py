@@ -36,6 +36,3 @@ class Point(NamedTuple):
         y = _rd.choice(ylim) if fixed_y else _rd.randint(*ylim)
 
         return cls(x, y)
-
-    def __str__(self) -> str:
-        return "({},{})".format(*self)
