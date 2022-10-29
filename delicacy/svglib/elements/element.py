@@ -3,7 +3,7 @@ from functools import cache
 from typing import Any
 
 from attrs import define, field
-from cytoolz import dicttoolz as dz
+from cytoolz import dicttoolz as dz  # type: ignore
 from lxml import etree
 from lxml.etree import _Element
 
