@@ -10,7 +10,8 @@ from lxml.etree import Element
 from delicacy.svglib.elements.element import ExtendedElement
 from delicacy.svglib.point import Point
 from delicacy.svglib.style import Fill, Stroke
-from delicacy.svglib.utils import Size, chainable
+from delicacy.svglib.utils.chain import chainable
+from delicacy.svglib.utils.utils import Size
 
 
 @define
@@ -44,17 +45,9 @@ class Line(ExtendedElement):
 
 
 @decorator
-def _make_relative(func: Callable[..., ExtendedElement], *args, **kwds):
+def _make_relative(func: Callable[..., str], *args, **kwds):
     result = func(*args, **kwds)
-    path_ops = result._element.get("d")
-
-    if path_ops is None:
-        raise NotImplementedError
-
-    prev_ops, _, latest_op = path_ops.rpartition(" ")
-    result.set("d", prev_ops + _ + latest_op.lower())
-
-    return result
+    return result.lower()
 
 
 @define
@@ -62,6 +55,7 @@ class Path(ExtendedElement):
     def __attrs_post_init__(self) -> None:
         self._element = Element("path", d="")  # type: ignore
 
+    @chainable.updater
     def _update(self, value: str) -> None:
         ops = self._element.get("d")
         if ops is None:
@@ -72,19 +66,19 @@ class Path(ExtendedElement):
     def M(self, x: float, y: float) -> str:
         return f" M{x},{y}"
 
-    m = _make_relative(M)
+    m = chainable(_make_relative(M.target))
 
     @chainable
     def L(self, x: float, y: float) -> str:
         return f" L{x},{y}"
 
-    l = _make_relative(L)  # noqa
+    l = chainable(_make_relative(L.target))  # noqa
 
     @chainable
     def Q(self, x1: float, y1: float, x: float, y: float) -> str:
         return f" Q{x1},{y1} {x},{y}"
 
-    q = _make_relative(Q)
+    q = chainable(_make_relative(Q.target))
 
     @chainable
     def C(
@@ -92,7 +86,7 @@ class Path(ExtendedElement):
     ) -> str:
         return f" C{x1},{y1} {x2},{y2} {x},{y}"
 
-    c = _make_relative(C)
+    c = chainable(_make_relative(C.target))
 
     @chainable
     def A(
@@ -109,13 +103,13 @@ class Path(ExtendedElement):
             f" A{rx},{ry} {x_rotation} {large_arc_flag},{sweep_flag} {x},{y}"
         )
 
-    a = _make_relative(A)
+    a = chainable(_make_relative(A.target))
 
     @chainable
     def Z(self) -> str:
         return " Z"
 
-    z = _make_relative(Z)
+    z = chainable(_make_relative(Z.target))
 
 
 @define

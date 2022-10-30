@@ -1,12 +1,13 @@
 from typing import Any
 
-from delicacy.svglib.utils import chainable
+from delicacy.svglib.utils.chain import chainable
 
 
 class Transform:
     def __init__(self):
         self._storage = ""
 
+    @chainable.updater
     def _update(self, value: Any) -> None:
         self._storage += value
 
