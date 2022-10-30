@@ -1,7 +1,7 @@
 import pytest
 from lxml.etree import _Element
 
-from delicacy.svglib.utils import get_canvas
+from delicacy.svglib.utils.utils import get_canvas
 
 STANDARD_CANVAS = {
     "width": "512",
