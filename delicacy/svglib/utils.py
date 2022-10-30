@@ -34,5 +34,5 @@ def chainable(method: MethodType, updater: str = "_update", *args, **kwds):
 
 
 class Size(NamedTuple):
-    width: int
-    height: int
+    width: float
+    height: float
