@@ -1,5 +1,6 @@
 from collections.abc import Iterable
 from itertools import chain
+from math import radians, tan
 from typing import Callable
 
 from attrs import define
@@ -8,6 +9,7 @@ from lxml.etree import Element
 
 from delicacy.svglib.elements.element import ExtendedElement
 from delicacy.svglib.point import Point
+from delicacy.svglib.style import Fill, Stroke
 from delicacy.svglib.utils import Size, chainable
 
 
@@ -41,20 +43,29 @@ class Line(ExtendedElement):
         return cls(Point(x1, y1), Point(x2, y2))
 
 
+@decorator
+def _make_relative(func: Callable[..., ExtendedElement], *args, **kwds):
+    result = func(*args, **kwds)
+    path_ops = result._element.get("d")
+
+    if path_ops is None:
+        raise NotImplementedError
+
+    prev_ops, _, latest_op = path_ops.rpartition(" ")
+    result.set("d", prev_ops + _ + latest_op.lower())
+
+    return result
+
+
 @define
 class Path(ExtendedElement):
     def __attrs_post_init__(self) -> None:
         self._element = Element("path", d="")  # type: ignore
 
-    @decorator
-    def _make_relative(func: Callable[..., str], *args, **kwds):
-        result = func(*args, **kwds)
-        prev_ops, _, latest_op = result._element.get("d").rpartition(" ")
-        result.set("d", prev_ops + _ + latest_op.lower())
-        return result
-
     def _update(self, value: str) -> None:
         ops = self._element.get("d")
+        if ops is None:
+            raise NotImplementedError
         self._element.set("d", ops + value)
 
     @chainable
@@ -135,3 +146,31 @@ class Rectangle(ExtendedElement):
         cls, x: float, y: float, width: float, height: float
     ) -> "Rectangle":
         return cls(Point(x, y), Size(width, height))
+
+
+def ETriangle(
+    location: Point = Point(0, 0), side: float = 120, styless: bool = True
+) -> Path:
+    """EquilateralTriangle"""
+    x, y = location
+    half = side // 2
+    angle = radians(60)
+    path = Path().m(x, y).l(side, 0).l(-half, tan(angle) * half).z()
+
+    if not styless:
+        path.apply_styles(Stroke(), Fill(color="none"))
+
+    return path
+
+
+def XShape(
+    location: Point = Point(0, 0), length: float = 120, styless: bool = True
+) -> Path:
+    x, y = location
+    step = length
+    path = Path().m(x, y).l(step, step).m(0, -step).l(-step, step)
+
+    if not styless:
+        path.apply_styles(Stroke(), Fill(color="none"))
+
+    return path
