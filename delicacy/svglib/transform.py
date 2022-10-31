@@ -22,6 +22,9 @@ class Transform:
     ) -> str:
         if x is None and y is None:
             return f" rotate({angle})"
+        elif (x is None) ^ (y is None):
+            msg = "x and y must either have values or be None simutanously"
+            raise ValueError(msg)
         else:
             return f" rotate({angle},{x},{y})"
 
