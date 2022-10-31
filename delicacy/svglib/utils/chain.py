@@ -5,20 +5,20 @@ T = TypeVar("T")
 V = TypeVar("V")
 
 
+class ChainableUpdaterError(ValueError):
+    ...
+
+
 class chainable:
     """A descriptor class to chain method calls"""
 
     _updater_registry: dict[str, Callable[..., None]] = {}
 
-    def __init__(
-        self, target: Callable[..., V], owner: Type[T] | None = None
-    ) -> None:
+    def __init__(self, target: Callable[..., V]) -> None:
         self.target = target
-        if owner is not None:
-            self._cls_name = owner.__name__
 
     def __set_name__(self, owner: Type[T], name: str) -> None:
-        self._cls_name = owner.__name__
+        self._managed_class = owner.__name__
 
     def __get__(
         self, instance: T | None = None, owner: Type[T] | None = None
@@ -30,7 +30,9 @@ class chainable:
             raise AttributeError("target method is missing")
 
         try:
-            _updater = self._updater_registry[self._cls_name]
+            _updater = self._updater_registry[self._managed_class]
+        except AttributeError:
+            raise AttributeError("chainable must be used in class definition")
         except KeyError:
             raise AttributeError("updater method is missing")
         else:
@@ -54,5 +56,14 @@ class chainable:
 
     @classmethod
     def updater(cls, _updater: Callable[..., None]) -> None:
-        owner, _ = _updater.__qualname__.split(".")
-        cls._updater_registry[owner] = _updater
+        qualname = _updater.__qualname__.rsplit(".", maxsplit=2)
+        try:
+            owner_name = qualname[-2]
+        except IndexError:
+            raise ValueError("_updater must be a bound method")
+        else:
+            if not owner_name.isidentifier():
+                raise ChainableUpdaterError(
+                    "fail to identify the managed class"
+                )
+            cls._updater_registry[owner_name] = _updater
