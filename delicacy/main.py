@@ -13,5 +13,10 @@ def main():
     my_img.show()
 
 
+def sandbox():
+    ...
+
+
 if __name__ == "__main__":
-    main()
+    # main()
+    sandbox()
