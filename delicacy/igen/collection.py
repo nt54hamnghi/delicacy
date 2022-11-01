@@ -1,10 +1,10 @@
 from collections.abc import Iterable, Iterator
 from pathlib import Path
 
-from attrs import define, field
+from attrs import field, frozen
 
 
-@define(frozen=True, eq=False, order=False)
+@frozen(order=False)
 class Collection:
     name: str
     path: Path
