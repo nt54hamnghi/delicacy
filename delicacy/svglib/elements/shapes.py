@@ -3,18 +3,17 @@ from itertools import chain
 from math import radians, tan
 from typing import Callable
 
-from attrs import define
 from decorator import decorator
 from lxml.etree import Element
 
-from delicacy.svglib.elements.element import ExtendedElement
+from delicacy.svglib.elements.element import ExtendedElement, svg_define
 from delicacy.svglib.point import Point
 from delicacy.svglib.style import Fill, Stroke
 from delicacy.svglib.utils.chain import chainable
 from delicacy.svglib.utils.utils import Size
 
 
-@define
+@svg_define
 class Circle(ExtendedElement):
     radius: float
     center: Point = Point(0, 0)
@@ -29,7 +28,7 @@ class Circle(ExtendedElement):
         return cls(radius, Point(cx, cy))
 
 
-@define
+@svg_define
 class Line(ExtendedElement):
     start: Point
     stop: Point
@@ -50,7 +49,7 @@ def _make_relative(func: Callable[..., str], *args, **kwds):
     return result.lower()
 
 
-@define
+@svg_define
 class Path(ExtendedElement):
     def __attrs_post_init__(self) -> None:
         self._element = Element("path", d="")  # type: ignore
@@ -112,7 +111,7 @@ class Path(ExtendedElement):
     z = chainable(_make_relative(Z.target))
 
 
-@define
+@svg_define
 class Polygon(ExtendedElement):
     points: Iterable[Point]
 
@@ -121,7 +120,7 @@ class Polygon(ExtendedElement):
         self._element = Element("polygon", points=points)  # type: ignore
 
 
-@define
+@svg_define
 class Rectangle(ExtendedElement):
     location: Point
     size: Size

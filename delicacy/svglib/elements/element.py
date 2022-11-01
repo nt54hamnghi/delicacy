@@ -1,5 +1,5 @@
 import re
-from functools import cache
+from functools import cache, partial
 from typing import Any
 
 from attrs import define, field
@@ -9,6 +9,8 @@ from lxml.etree import _Element
 
 from delicacy.svglib.style import Style
 from delicacy.svglib.transform import Transform
+
+svg_define = partial(define, str=False, order=False)
 
 
 @define
