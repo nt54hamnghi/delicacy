@@ -32,6 +32,17 @@ def test_element_str(element):
     assert str(svge) == tostring(element, pretty_print=True).decode("utf8")
 
 
+def test_element_set(element):
+    svge = SVGElement.from_etree_element(element)
+    svge.set("set", str(...))
+    assert svge().get("set") == str(Ellipsis)
+
+
+def test_element_get(element):
+    svge = SVGElement.from_etree_element(element)
+    assert svge.get("cx") == "10"
+
+
 @pytest.fixture
 def style_str():
     return "stroke: white; stroke-opacity: 1; stroke-width: 5; fill: black; fill-opacity: 0.8;"  # noqa

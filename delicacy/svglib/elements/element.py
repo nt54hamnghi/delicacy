@@ -32,7 +32,10 @@ class SVGElement:
         return self._element
 
     def set(self, tag: str, value: Any) -> None:
-        self._element.set(tag, value)
+        self().set(tag, value)
+
+    def get(self, tag: str):
+        return self().get(tag)
 
     @classmethod
     def from_etree_element(cls, value: _Element) -> "SVGElement":
