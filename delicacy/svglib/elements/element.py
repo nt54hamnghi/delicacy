@@ -3,6 +3,8 @@ from functools import cache, partial
 from typing import Any
 
 from attrs import define, field
+
+# can't find stub file for cytoolz
 from cytoolz import dicttoolz as dz  # type: ignore
 from lxml import etree
 from lxml.etree import _Element
