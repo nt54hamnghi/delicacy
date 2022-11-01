@@ -10,7 +10,7 @@ class Collection:
     path: Path
     layer_names: Iterable[str] = field(converter=tuple)
 
-    @layer_names.default  # type: ignore
+    @layer_names.default
     def _layer(self) -> Iterator[str]:
         return (d.stem for d in self.layer_paths)
 
