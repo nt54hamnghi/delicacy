@@ -61,7 +61,7 @@ class Path(ExtendedElement):
         ops = self._element.get("d")
         if ops is None:
             raise NotImplementedError
-        self._element.set("d", ops + value)
+        self._element.set("d", (ops + value).lstrip())
 
     @chainable
     def M(self, x: float, y: float) -> str:
