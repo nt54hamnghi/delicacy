@@ -32,6 +32,8 @@ class SVGElement:
 
     @classmethod
     def from_etree_element(cls, value: _Element) -> "SVGElement":
+        if not isinstance(value, _Element):
+            raise ValueError("not an etree._Element")
         instance = cls()
         instance._element = value
         return instance
@@ -49,7 +51,7 @@ class ExtendedElement(SVGElement):
         if kind is not None:
             style_set = set(k.split("-")[0] for k in keys)
             if (kind := kind.lower()) not in style_set:
-                raise ValueError("Not a valid style")
+                raise ValueError("not a valid style")
 
         style_dict = dict(zip(keys, values))
 
@@ -76,7 +78,7 @@ class ExtendedElement(SVGElement):
         else:
             kind = style.__class__.__name__.lower()
             remains = ";".join(s for s in _styles.split(";") if kind not in s)
-            _styles = str(style) + remains
+            _styles = str(style) + f" {remains.strip()}"
             super().set("style", _styles)
 
     def add_transform(self, transform: Transform) -> None:
