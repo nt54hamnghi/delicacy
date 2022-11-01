@@ -19,7 +19,7 @@ def test_create_SVGElement(element):
 
 def test_element_repr(element):
     svge = SVGElement.from_etree_element(element)
-    assert repr(svge) == repr(element)
+    assert svge._element_repr() == repr(element)
 
 
 def test_element_bytes(element):

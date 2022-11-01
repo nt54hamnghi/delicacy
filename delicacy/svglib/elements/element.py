@@ -15,7 +15,7 @@ from delicacy.svglib.transform import Transform
 class SVGElement:
     _element: _Element = field(init=False, repr=False)
 
-    def __repr__(self) -> str:
+    def _element_repr(self) -> str:
         return repr(self._element)
 
     def __str__(self) -> str:
