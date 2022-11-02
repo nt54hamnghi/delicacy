@@ -1,7 +1,10 @@
+from io import BytesIO
 from typing import NamedTuple
 
+from cairosvg import svg2png
 from lxml import etree
 from lxml.etree import Element, _Element
+from PIL import Image
 
 
 def eprint(element: _Element) -> None:
@@ -20,6 +23,16 @@ def get_canvas(
     tag |= kwds
     nsmap = dict(xlink="http://www.w3.org/1999/xlink")
     return Element("svg", attrib=tag, nsmap=nsmap)
+
+
+def svg2img(bytestring: bytes, bgcolor="black", *args, **kwds) -> Image.Image:
+    img_bytes = svg2png(bytestring, background_color=bgcolor, *args, **kwds)
+    byte_io = BytesIO(img_bytes)
+    return Image.open(byte_io)
+
+
+def canvas2img(canvas: _Element, *args, **kwds) -> Image.Image:
+    return svg2img(etree.tostring(canvas), *args, **kwds)
 
 
 class Size(NamedTuple):

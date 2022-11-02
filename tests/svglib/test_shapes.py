@@ -1,4 +1,5 @@
 from math import pi, tan
+
 import pytest
 from lxml.etree import Element, tostring
 
@@ -7,8 +8,8 @@ from delicacy.svglib.elements.shapes import (
     ETriangle,
     Line,
     Path,
-    Rectangle,
     Polygon,
+    Rectangle,
     XShape,
 )
 from delicacy.svglib.point import Point

@@ -1,6 +1,6 @@
 import pytest
-from lxml.etree import Element, tostring
 from cytoolz.dicttoolz import keyfilter
+from lxml.etree import Element, tostring
 
 from delicacy.svglib.elements.element import ExtendedElement, SVGElement
 from delicacy.svglib.style import Fill, Stroke
