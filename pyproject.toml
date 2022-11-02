@@ -13,12 +13,14 @@ decorator = "5.1.*"
 cytoolz = "0.12.*"
 lxml = "4.9.*"
 Pillow = "9.2.*"
+cairosvg = "^2.5.2"
 
 
 [tool.poetry.dev-dependencies]
 pytest = "7.1.*"
 black = "22.3.*"
 mypy = "^0.982"
+notebook = "6.4.12"
 lxml-stubs = "0.4.*"
 types-decorator = "^5.1.8.1"
 types-Pillow = "9.2.1"
