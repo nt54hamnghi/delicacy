@@ -1,6 +1,7 @@
 import random
+from itertools import product
 from math import cos, radians, sin
-from typing import NamedTuple
+from typing import Iterator, NamedTuple
 
 
 class Point(NamedTuple):
@@ -37,7 +38,7 @@ def rand_points(
     xlim: tuple[int, int],
     ylim: tuple[int, int],
     seed: int | None = None,
-):
+) -> Iterator[Point]:
     if seed is not None:
         random.seed(seed)
 
@@ -49,16 +50,33 @@ def rand_bounded_points(
     xlim: tuple[int, int],
     ylim: tuple[int, int],
     seed: int | None = None,
-):
+) -> Iterator[Point]:
     """
-    generate random points whose x and y are randomly bounded to the limit
+    generate random points whose x and y are randomly bounded to the limit.
     """
-
     if seed is not None:
         random.seed(seed)
 
-    fxs = random.choices([True, False], k=num)  # fixed flags for x
-    fys = random.choices([True, False], k=num)  # fixed flags for y
+    options = tuple(product([True, False], repeat=2))
 
-    for _, fx, fy in zip(range(num), fxs, fys):
-        yield Point.randpoint(xlim, ylim, fx, fy)
+    for fdx, fdy in random.choices(options, k=num):
+        yield Point.randpoint(xlim, ylim, fdx, fdy)
+
+
+def rand_fixed_points(
+    num: int,
+    xlim: tuple[int, int],
+    ylim: tuple[int, int],
+    seed: int | None = None,
+) -> Iterator[Point]:
+
+    """
+    generate random points whose either x and y must be bounded to the limit.
+    """
+    if seed is not None:
+        random.seed(seed)
+
+    options = tuple(filter(sum, product([True, False], repeat=2)))
+
+    for fdx, fdy in random.choices(options, k=num):
+        yield Point.randpoint(xlim, ylim, fdx, fdy)
