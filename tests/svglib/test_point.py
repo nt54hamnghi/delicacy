@@ -1,9 +1,14 @@
 from math import pi
-from unittest import mock
+from unittest.mock import patch
 
 import pytest
 
-from delicacy.svglib.point import Point, rand_bounded_points, rand_points
+from delicacy.svglib.point import (
+    Point,
+    rand_bounded_points,
+    rand_fixed_points,
+    rand_points,
+)
 
 
 def test_create_point():
@@ -78,32 +83,24 @@ def test_rand_points_with_seed(seed):
     assert list(first) == list(second)
 
 
-@pytest.mark.parametrize(
-    "choices",
-    (
-        [True, True, True],
-        [True, False, False],
-        [False, True, False],
-        [False, False, True],
-    ),
-)
-@mock.patch("delicacy.svglib.point.random.choices")
-def test_rand_bounded_points(mock_choices, choices):
-    mock_choices.return_value = choices
-
+@patch("delicacy.svglib.point.random.choices")
+def test_rand_bounded_points(mock_choices):
+    mock_choices.return_value = [(True, True), (True, False), (False, False)]
     xlim = ylim = (0, 512)
-
-    points = list(rand_bounded_points(3, xlim, ylim))
+    points = rand_bounded_points(3, xlim, ylim)
 
     def onbound(n, lim):
         start, end = lim
         return n == start or n == end
 
-    if all(choices):
-        assert all(onbound(x, xlim) and onbound(y, ylim) for x, y in points)
-    else:
-        x, y = points[choices.index(True)]
-        assert onbound(x, xlim) and onbound(y, ylim)
+    x, y = next(points)
+    assert onbound(x, xlim) and onbound(y, ylim)
+
+    x, y = next(points)
+    assert onbound(x, xlim) and not onbound(y, ylim)
+
+    x, y = next(points)
+    assert not onbound(x, xlim) and not onbound(y, ylim)
 
 
 @pytest.mark.parametrize("seed", tuple(range(3)))
@@ -111,5 +108,25 @@ def test_rand_bounded_points_with_seed(seed):
     xlim = ylim = (0, 512)
     first = rand_bounded_points(3, xlim, ylim, seed=seed)
     second = rand_bounded_points(3, xlim, ylim, seed=seed)
+
+    assert list(first) == list(second)
+
+
+def test_rand_fixed_points():
+    xlim = ylim = (0, 512)
+    points = list(rand_bounded_points(3, xlim, ylim))
+
+    def onbound(n, lim):
+        start, end = lim
+        return n == start or n == end
+
+    assert all(onbound(x, xlim) or onbound(y, ylim) for x, y in points)
+
+
+@pytest.mark.parametrize("seed", tuple(range(3)))
+def test_rand_fixed_points_with_seed(seed):
+    xlim = ylim = (0, 512)
+    first = rand_fixed_points(3, xlim, ylim, seed=seed)
+    second = rand_fixed_points(3, xlim, ylim, seed=seed)
 
     assert list(first) == list(second)
