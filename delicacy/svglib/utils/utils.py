@@ -25,14 +25,18 @@ def get_canvas(
     return Element("svg", attrib=tag, nsmap=nsmap)
 
 
-def svg2img(bytestring: bytes, bgcolor="black", *args, **kwds) -> Image.Image:
-    img_bytes = svg2png(bytestring, background_color=bgcolor, *args, **kwds)
+def svg2img(bytestring: bytes, *args, **kwds) -> Image.Image:
+    img_bytes = svg2png(bytestring, *args, **kwds)
     byte_io = BytesIO(img_bytes)
     return Image.open(byte_io)
 
 
-def canvas2img(canvas: _Element, *args, **kwds) -> Image.Image:
-    return svg2img(etree.tostring(canvas), *args, **kwds)
+def canvas2img(
+    canvas: _Element, bg_color="black", *args, **kwds
+) -> Image.Image:
+    return svg2img(
+        etree.tostring(canvas), background_color=bg_color, *args, **kwds
+    )
 
 
 class Size(NamedTuple):
