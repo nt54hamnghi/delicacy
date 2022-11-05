@@ -1,10 +1,17 @@
 from io import BytesIO
+from itertools import count, takewhile
 from typing import NamedTuple
+from collections.abc import Iterator
 
 from cairosvg import svg2png
 from lxml import etree
 from lxml.etree import Element, _Element
 from PIL import Image
+
+
+class Size(NamedTuple):
+    width: float
+    height: float
 
 
 def eprint(element: _Element) -> None:
@@ -25,6 +32,23 @@ def get_canvas(
     return Element("svg", attrib=tag, nsmap=nsmap)
 
 
+def linspace(start: float, stop: float, n_samples: int) -> Iterator[float]:
+    if start >= stop:
+        raise ValueError("start must be less than stop")
+    if n_samples < 0:
+        raise ValueError("number of samples, must be non-negative")
+    elif n_samples == 0:
+        return iter(())
+
+    step = (stop - start) / (n_samples - 1)
+    bound = start + step * (n_samples - 1)
+
+    # mypy fails to interpret count[T] as Iterable[T]
+    return takewhile(
+        lambda x: x <= bound + 1e-12, count(start, step)  # type:ignore
+    )
+
+
 def svg2img(bytestring: bytes, *args, **kwds) -> Image.Image:
     img_bytes = svg2png(bytestring, *args, **kwds)
     byte_io = BytesIO(img_bytes)
@@ -37,8 +61,3 @@ def canvas2img(
     return svg2img(
         etree.tostring(canvas), background_color=bg_color, *args, **kwds
     )
-
-
-class Size(NamedTuple):
-    width: float
-    height: float
