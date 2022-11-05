@@ -1,7 +1,6 @@
-from collections.abc import Iterable
+from collections.abc import Iterable, Callable
 from itertools import chain
 from math import radians, tan
-from typing import Callable
 
 from decorator import decorator
 from lxml.etree import Element

@@ -1,7 +1,7 @@
 import hashlib
-from collections.abc import Iterator
+from collections.abc import Iterator, Callable
 from pathlib import Path
-from typing import Callable, Protocol, TypeAlias
+from typing import Protocol, TypeAlias
 
 from bitstring import BitArray
 from PIL import Image
