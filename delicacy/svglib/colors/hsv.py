@@ -22,11 +22,11 @@ class HSVColor(namedtuple("HSVColor", ["hue", "sat", "val"])):
 
         return super().__new__(cls, int(hue % HUE_MAX), int(sat), int(val))
 
-    def normalize(self) -> tuple[int, int, int]:
+    def normalize(self) -> tuple[float, float, float]:
         hue, sat, val = self
         return (hue / HUE_MAX, sat / SAT_MAX, val / VAL_MAX)
 
-    def to_rgb(self, normalize: bool = True) -> tuple[float, float, float]:
+    def to_rgb(self, normalize: bool = True) -> tuple:
         rgb = hsv_to_rgb(*self.normalize())
         if normalize:
             return tuple(int(c * 255) for c in rgb)
