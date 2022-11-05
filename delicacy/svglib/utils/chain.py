@@ -1,4 +1,4 @@
-from typing import Any, Callable, NoReturn, Type, TypeVar
+from typing import Any, Callable, NoReturn, TypeVar
 
 T = TypeVar("T")
 V = TypeVar("V")
@@ -16,11 +16,11 @@ class chainable:
     def __init__(self, target: Callable[..., V]) -> None:
         self.target = target
 
-    def __set_name__(self, owner: Type[T], name: str) -> None:
+    def __set_name__(self, owner: type[T], name: str) -> None:
         self._managed_class = owner.__name__
 
     def __get__(
-        self, instance: T | None = None, owner: Type[T] | None = None
+        self, instance: T | None = None, owner: type[T] | None = None
     ):
         if instance is None:
             return self
