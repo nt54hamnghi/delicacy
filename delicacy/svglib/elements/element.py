@@ -47,6 +47,8 @@ class SVGElement:
 
 
 class ExtendedElement(SVGElement):
+    __slots__ = ()
+
     @staticmethod
     @cache
     def extract_styles(
