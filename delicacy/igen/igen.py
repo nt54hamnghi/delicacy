@@ -1,5 +1,5 @@
 import hashlib
-from collections.abc import Iterator, Callable
+from collections.abc import Callable, Iterator
 from pathlib import Path
 from typing import Protocol, TypeAlias
 

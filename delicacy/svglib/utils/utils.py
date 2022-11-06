@@ -1,7 +1,7 @@
+from collections.abc import Iterator
 from io import BytesIO
 from itertools import count, takewhile
 from typing import NamedTuple
-from collections.abc import Iterator
 
 from cairosvg import svg2png
 from lxml import etree

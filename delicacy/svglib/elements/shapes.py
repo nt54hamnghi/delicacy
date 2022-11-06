@@ -1,4 +1,4 @@
-from collections.abc import Iterable, Callable
+from collections.abc import Callable, Iterable
 from itertools import chain
 from math import radians, tan
 
