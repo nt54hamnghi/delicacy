@@ -4,8 +4,7 @@ from typing import Any
 
 from attrs import define, field
 
-# can't find stub file for cytoolz
-from cytoolz import dicttoolz as dz  # type: ignore
+from cytoolz.dicttoolz import keyfilter
 from lxml import etree
 from lxml.etree import _Element
 
@@ -67,7 +66,7 @@ class ExtendedElement(SVGElement):
         if kind is None:
             return style_dict
 
-        return dz.keyfilter(lambda x: kind in x, style_dict)
+        return keyfilter(lambda x: kind in x, style_dict)
 
     @property
     def styles(self):
