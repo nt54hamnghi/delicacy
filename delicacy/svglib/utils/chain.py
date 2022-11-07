@@ -1,14 +1,13 @@
 from collections.abc import Callable
 from typing import NoReturn, TypeVar
 
-from cytoolz.dicttoolz import valfilter  # type: ignore
+from cytoolz.dicttoolz import valfilter
+
 
 T = TypeVar("T")
 
 
 class _updater:
-    """A descriptor class to chain method calls"""
-
     def __init__(self, target: Callable) -> None:
         # checking against type(None) to avoid NoneType callable
         if not callable(target) or target is type(None):  # noqa
@@ -20,13 +19,15 @@ class _updater:
         chains = valfilter(lambda x: isinstance(x, chainable), owner.__dict__)
 
         if len(chains) == 0:
-            msg = "_updater cannot be used with non-chainable class"
+            msg = "_updater cannot be used with non-chainable classes"
             raise ValueError(msg)
 
     def __set__(self, instance, value) -> NoReturn:
         raise AttributeError("setter not available for updater methods")
 
-    def __get__(self, instance: T = None, owner: type[T] | None = None):
+    def __get__(
+        self, instance: T | None = None, owner: type[T] | None = None
+    ):
         if instance is None:
             return self
 
@@ -34,7 +35,7 @@ class _updater:
 
 
 class chainable:
-    """A descriptor class to chain method calls"""
+    """A descriptor to chain method calls"""
 
     # reference to _updater descriptor class to expose it through chainable
     updater = _updater
@@ -51,7 +52,7 @@ class chainable:
         ups = valfilter(lambda x: isinstance(x, _updater), owner.__dict__)
 
         if len(ups) != 1:
-            msg = "each chainable class can have one and only one updater"
+            msg = "each chainable class has one and only one updater"
             raise ValueError(msg)
 
         self.managed_updater = tuple(ups.values())[0]
@@ -59,24 +60,29 @@ class chainable:
     def __set__(self, instance, value) -> NoReturn:
         raise AttributeError("setter not available for chained methods")
 
-    def __get__(self, instance: T = None, owner: type[T] | None = None):
+    def __get__(
+        self, instance: T | None = None, owner: type[T] | None = None
+    ):
         if instance is None:
             return self
 
+        # invoke self.__call__ to get a chainable method and return it
         return self(instance)
 
     def __call__(self, instance: T) -> Callable[..., T]:
-        def chained(*args, **kwds) -> T:
+        # this will replace the decorated target in chainable classes
+        def chained_method(*args, **kwds) -> T:
             # prepend instance in self.target call
-            # because the decorated target is passed as a function
+            # because target is passed as a function
             value = self.target(instance, *args, **kwds)
 
-            try:
-                # call __get__ to retrieve the underlying method
-                self.managed_updater.__get__(instance)(instance, value)
-            except AttributeError as err:
-                raise type(err)("chainable must be used in class definition")
+            if self.managed_updater is None:
+                msg = "chainable must be used in class definition"
+                raise AttributeError(msg)
+
+            # call __get__ to retrieve the underlying method
+            self.managed_updater.__get__(instance)(instance, value)
 
             return instance
 
-        return chained
+        return chained_method
