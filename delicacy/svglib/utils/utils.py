@@ -1,9 +1,10 @@
 from collections.abc import Iterator
 from io import BytesIO
-from itertools import count, takewhile
+from itertools import count
 from typing import NamedTuple
 
 from cairosvg import svg2png
+from cytoolz.itertoolz import take
 from lxml import etree
 from lxml.etree import Element, _Element
 from PIL import Image
@@ -41,12 +42,9 @@ def linspace(start: float, stop: float, n_samples: int) -> Iterator[float]:
         return iter(())
 
     step = (stop - start) / (n_samples - 1)
-    bound = start + step * (n_samples - 1)
+    space = (round(i, 3) for i in count(start, step))
 
-    # mypy fails to interpret count[T] as Iterable[T]
-    return takewhile(
-        lambda x: x <= bound + 1e-12, count(start, step)  # type:ignore
-    )
+    return take(n_samples, space)
 
 
 def svg2img(bytestring: bytes, *args, **kwds) -> Image.Image:
