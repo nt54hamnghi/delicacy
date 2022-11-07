@@ -3,7 +3,6 @@ from typing import NoReturn, TypeVar
 
 from cytoolz.dicttoolz import valfilter
 
-
 T = TypeVar("T")
 
 

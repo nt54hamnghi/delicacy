@@ -3,7 +3,6 @@ from functools import cache, partial
 from typing import Any
 
 from attrs import define, field
-
 from cytoolz.dicttoolz import keyfilter
 from lxml import etree
 from lxml.etree import _Element
