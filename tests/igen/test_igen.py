@@ -1,4 +1,4 @@
-from hashlib import sha512
+from hashlib import sha3_512
 from unittest import mock
 
 import pytest
@@ -23,7 +23,7 @@ def img_gen(collection):
 
 def test_create_igen(img_gen):
     assert img_gen.collection.name == "Cat"
-    assert img_gen.hash_func.__name__ == sha512.__name__
+    assert img_gen.hash_func.__name__ == sha3_512.__name__
 
 
 @pytest.mark.parametrize(
@@ -37,12 +37,12 @@ def test_create_igen(img_gen):
 def test_igen_hash(img_gen, key, data):
     hashed = img_gen._hash(key, data)
 
-    hash_object = sha512("test".encode())
+    hash_object = sha3_512("test".encode())
     hash_object.update(str(data).encode("utf8"))
-    sha512_hashed = hash_object.digest()
+    sha3_512_hashed = hash_object.digest()
 
     assert isinstance(hashed, BitArray)
-    assert hashed.bytes == sha512_hashed
+    assert hashed.bytes == sha3_512_hashed
 
 
 @pytest.fixture
@@ -80,6 +80,11 @@ def test_igen_pick_layers(mock_hash, image_path, hashed):
     ]
 
     assert list(igen._pick_layers(b"")) == expected
+
+
+def test_generate_max_length(img_gen):
+    with pytest.raises(ValueError):
+        img_gen.generate("-" * 33)
 
 
 # def test_nothing(image_path):
