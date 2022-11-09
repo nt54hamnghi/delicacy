@@ -13,7 +13,7 @@ from delicacy.svglib.utils.transform import Transform
 svg_define = partial(define, str=False, order=False)
 
 
-@define
+@svg_define
 class SVGElement:
     _element: _Element = field(init=False, repr=False)
 
