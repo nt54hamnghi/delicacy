@@ -5,7 +5,6 @@ import pytest
 from cytoolz.itertoolz import take
 
 from delicacy.svglib.colors.hsv import HUE_MAX, SAT_MAX, VAL_MAX
-
 from delicacy.svglib.colors.palette import (
     EARTH,
     JEWEL,
