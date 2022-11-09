@@ -94,6 +94,7 @@ def segment(n_segments: int, num: int) -> ColorIter:
     )
 
 
+# re-assign __name__ for debugging purposes
 complementary = palette(segment(2))
 complementary.__name__ = "complementary"
 
