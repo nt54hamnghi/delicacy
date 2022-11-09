@@ -1,7 +1,7 @@
 import attrs
 import pytest
 
-from delicacy.svglib.style import Fill, Stroke, Style
+from delicacy.svglib.utils.style import Fill, Stroke, Style
 
 
 def test_create_style():

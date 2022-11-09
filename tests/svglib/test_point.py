@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from delicacy.svglib.point import (
+from delicacy.svglib.utils.point import (
     Point,
     rand_bounded_points,
     rand_fixed_points,
@@ -83,7 +83,7 @@ def test_rand_points_with_seed(seed):
     assert list(first) == list(second)
 
 
-@patch("delicacy.svglib.point.random.choices")
+@patch("delicacy.svglib.utils.point.random.choices")
 def test_rand_bounded_points(mock_choices):
     mock_choices.return_value = [(True, True), (True, False), (False, False)]
     xlim = ylim = (0, 512)
