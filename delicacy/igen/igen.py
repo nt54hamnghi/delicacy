@@ -2,6 +2,7 @@ import hashlib
 from collections.abc import Callable, Iterator
 from pathlib import Path
 from typing import Protocol, TypeAlias
+from unicodedata import normalize
 
 from bitstring import BitArray
 from PIL import Image
@@ -30,7 +31,9 @@ HashFunction: TypeAlias = Callable[..., SupportHashing]
 
 class ImageGenerator:
     def __init__(
-        self, collection: Collection, hash_func: HashFunction = hashlib.sha512
+        self,
+        collection: Collection,
+        hash_func: HashFunction = hashlib.sha3_512,
     ) -> None:
         self.collection = collection
         self.hash_func = hash_func
@@ -80,9 +83,9 @@ class ImageGenerator:
 
         return frame.resize(size)
 
-    def generate(
-        self, phrase: str, data: SupportStr = "", *args, **kwds
-    ) -> Image.Image:
-        seed = self._hash(phrase, data)
+    def generate(self, phrase: str, *args, **kwds) -> Image.Image:
+        if len(phrase) > 32:
+            raise ValueError("phrase length must be less than 32")
+        seed = self._hash(normalize("NFC", phrase))
         layers = self._pick_layers(seed)
         return self._assemble(layers, *args, **kwds)
