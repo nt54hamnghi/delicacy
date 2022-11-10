@@ -75,6 +75,9 @@ class chainable:
             # because target is passed as a function
             value = self.target(instance, *args, **kwds)
 
+            # use chainable in class definition allows __set_name__ to run
+            # __set_name__ is responisble for initialzing managed_updater
+            # otherwise managed_updater is None
             if self.managed_updater is None:
                 msg = "chainable must be used in class definition"
                 raise AttributeError(msg)
