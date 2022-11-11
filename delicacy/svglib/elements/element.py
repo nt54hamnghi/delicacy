@@ -5,7 +5,7 @@ from typing import Any
 from attrs import define, field
 from cytoolz.dicttoolz import keyfilter
 from lxml import etree
-from lxml.etree import _Element
+from lxml.etree import Element, _Element
 
 from delicacy.svglib.elements.peripheral.style import Style
 from delicacy.svglib.elements.peripheral.transform import Transform
@@ -93,3 +93,18 @@ class ExtendedElement(SVGElement):
         if value == "":
             raise ValueError("empty transform")
         super().set("transform", value)
+
+
+def wraps(
+    tag, *childs: SVGElement, extended: bool = True, **kwds
+) -> SVGElement:
+    root = Element(tag, **kwds)
+    root.extend(child() for child in childs)
+
+    element_cls = ExtendedElement if extended else SVGElement
+    return element_cls.from_etree_element(root)
+
+
+defs = partial(wraps, "defs", extended=False)
+group = partial(wraps, "g")
+symbol = partial(wraps, "symbol")

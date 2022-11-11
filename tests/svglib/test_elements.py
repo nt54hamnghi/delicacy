@@ -2,7 +2,11 @@ import pytest
 from cytoolz.dicttoolz import keyfilter
 from lxml.etree import Element, tostring
 
-from delicacy.svglib.elements.element import ExtendedElement, SVGElement
+from delicacy.svglib.elements.element import (
+    ExtendedElement,
+    SVGElement,
+    wraps,
+)
 from delicacy.svglib.elements.peripheral.style import Fill, Stroke
 from delicacy.svglib.elements.peripheral.transform import Transform
 
@@ -142,3 +146,25 @@ def test_ExtendedElement_add_transform_fail(element):
         ext.add_transform(transform)
 
     assert str(err.value) == "empty transform"
+
+
+@pytest.mark.parametrize(
+    ("tag", "extended"), (("defs", False), ("g", True), ("symbol", True))
+)
+def test_wraps(tag, extended):
+    childs = []
+    for i in range(10):
+        elm = Element("circle", attrib=dict(r=f"{i}"))
+        childs.append(ExtendedElement.from_etree_element(elm))
+    wrapped = wraps(tag, *childs, extended=extended)
+
+    assert wrapped().tag == tag
+    assert len(wrapped()) == 10
+
+    for c, w in zip(childs, wrapped()):
+        assert c() is w
+
+    if extended:
+        assert type(wrapped) is ExtendedElement
+    else:
+        assert type(wrapped) is SVGElement
