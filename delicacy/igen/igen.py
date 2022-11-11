@@ -68,20 +68,22 @@ class ImageGenerator:
         self,
         layers: Iterator[Path],
         size: tuple[int, int] = (300, 300),
-        proportion: float = 0.7,
+        factor: float = 0.8,
     ) -> Image.Image:
-        frame_size = fx, fy = (1024, 1024)
-        layer_size = lx, ly = int(fx * proportion), int(fy * proportion)
+        fx, fy = size
+        lx, ly = int(fx * factor), int(fy * factor)
         box = (fx - lx) // 2, fy - ly
 
-        frame = Image.new(mode="RGBA", size=frame_size)
+        frame = Image.new(mode="RGBA", size=size)
 
-        for item in layers:
-            img = Image.open(item).resize(layer_size)
-            frame.paste(img, box, mask=img)
-            img.close()
+        with Image.open(next(layers)) as base:
+            for item in layers:
+                with Image.open(item) as img:
+                    base.paste(img, box=(0, 0), mask=img)
 
-        return frame.resize(size)
+        base = base.resize(size=(lx, ly))
+        frame.paste(base, box, mask=base)
+        return frame
 
     def generate(self, phrase: str, *args, **kwds) -> Image.Image:
         if len(phrase) > 32:
