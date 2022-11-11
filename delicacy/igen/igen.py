@@ -1,13 +1,13 @@
 import hashlib
+import os
 from collections.abc import Callable, Iterator
-from pathlib import Path
-from typing import Protocol, TypeAlias
+from typing import Protocol, TypeAlias, cast
 from unicodedata import normalize
 
 from bitstring import BitArray
 from PIL import Image
 
-from delicacy.igen.collection import Collection
+from delicacy.igen.collection import Collection, PathType
 
 
 class SupportHashing(Protocol):
@@ -49,12 +49,12 @@ class ImageGenerator:
         return BitArray(bytes=hashed.digest())
 
     @staticmethod
-    def _pick(_hash: BitArray, path: Path) -> Path:
-        imgs = sorted(path.iterdir())
+    def _pick(_hash: BitArray, path: PathType) -> PathType:
+        imgs = sorted(d.path for d in os.scandir(path))
         chosen_idx = _hash.uint % len(imgs)
         return imgs[chosen_idx]
 
-    def _pick_layers(self, seed: bytes | BitArray) -> Iterator[Path]:
+    def _pick_layers(self, seed: bytes | BitArray) -> Iterator[PathType]:
         if isinstance(seed, bytes):
             seed = BitArray(bytes=seed)
 
@@ -66,7 +66,7 @@ class ImageGenerator:
 
     def _assemble(
         self,
-        layers: Iterator[Path],
+        layers: Iterator[PathType],
         size: tuple[int, int] = (300, 300),
         factor: float = 0.8,
     ) -> Image.Image:
@@ -75,6 +75,8 @@ class ImageGenerator:
         box = (fx - lx) // 2, fy - ly
 
         frame = Image.new(mode="RGBA", size=size)
+
+        layers = cast(Iterator[str], layers)
 
         with Image.open(next(layers)) as base:
             for item in layers:

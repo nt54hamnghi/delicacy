@@ -1,3 +1,4 @@
+import os
 from hashlib import sha3_512
 from unittest import mock
 
@@ -62,7 +63,7 @@ def test_igen_pick(img_gen, image_path):
     picked = img_gen._pick(_hash, _path)
     expected = f"img_{_hash.uint % len(list(_path.iterdir()))}.png"
 
-    assert picked.name == expected
+    assert os.path.basename(picked) == expected
 
 
 @pytest.mark.parametrize(
@@ -76,10 +77,12 @@ def test_igen_pick_layers(mock_hash, image_path, hashed):
     igen = ImageGenerator(collection)
 
     expected = [
-        _path / f"img_{hashed%10}.png" for _path in image_path.iterdir()
+        str(_path / f"img_{hashed%10}.png") for _path in image_path.iterdir()
     ]
 
-    assert list(igen._pick_layers(b"")) == expected
+    result = list(igen._pick_layers(b""))
+
+    assert result == expected
 
 
 def test_generate_max_length(img_gen):

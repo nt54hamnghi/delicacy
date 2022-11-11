@@ -9,8 +9,8 @@ def main():
     print(robot_collection)
 
     img_gen = ImageGenerator(robot_collection)
-    my_img = img_gen.generate("hamnghi", size=(512, 512), proportion=0.85)
-    my_img.show()
+    img_gen.generate("hamnghi", size=(512, 512))
+    # img_gen.generate("hamnghi", size=(512, 512)).save("demo.png")
 
 
 def sandbox():
@@ -18,5 +18,5 @@ def sandbox():
 
 
 if __name__ == "__main__":
-    # main()
-    sandbox()
+    main()
+    # sandbox()

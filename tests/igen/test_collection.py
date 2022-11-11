@@ -23,24 +23,26 @@ LAYER_NAMES_BY_DEFAULT = (
     ids=("tuple", "list", "default"),
 )
 def test_create_collection(layer_names, expected):
-    collection_dir = COLLECTION_DIR / "cat"
+    # collection directory
+    cdir = COLLECTION_DIR / "cat"
 
     if layer_names is None:
-        cat = Collection("Cat", collection_dir)
+        cat = Collection("Cat", cdir)
     else:
-        cat = Collection("Cat", collection_dir, layer_names)
+        cat = Collection("Cat", cdir, layer_names)
 
-    layer_dir = tuple(d for d in collection_dir.iterdir() if d.is_dir())
+    layer_dir = tuple(str(d) for d in cdir.iterdir() if d.is_dir())
 
     assert isinstance(cat.layer_names, tuple)
     assert tuple(cat.layer_paths) == layer_dir
     assert cat.layer_names == expected
 
 
-def test_collection_layers():
-    collection_dir = COLLECTION_DIR / "cat"
-    cat = Collection("Cat", collection_dir)
-    layer_dir = tuple(d for d in collection_dir.iterdir() if d.is_dir())
+def test_collection_layers_property():
+    # collection directory
+    cdir = COLLECTION_DIR / "cat"
+    cat = Collection("Cat", cdir)
+    layer_dir = tuple(str(d) for d in cdir.iterdir() if d.is_dir())
 
     assert isinstance(cat.layers, zip)
     assert list(cat.layers) == list(zip(LAYER_NAMES_BY_DEFAULT, layer_dir))
