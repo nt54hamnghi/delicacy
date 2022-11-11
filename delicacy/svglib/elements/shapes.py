@@ -6,8 +6,8 @@ from decorator import decorator
 from lxml.etree import Element
 
 from delicacy.svglib.elements.element import ExtendedElement, svg_define
-from delicacy.svglib.utils.point import Point
-from delicacy.svglib.utils.style import Fill, Stroke
+from delicacy.svglib.elements.peripheral.point import Point
+from delicacy.svglib.elements.peripheral.style import Fill, Stroke
 from delicacy.svglib.utils.chain import chainable
 from delicacy.svglib.utils.utils import Size
 

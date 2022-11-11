@@ -1,6 +1,6 @@
 import pytest
 
-from delicacy.svglib.utils.transform import Transform
+from delicacy.svglib.elements.peripheral.transform import Transform
 
 
 @pytest.fixture

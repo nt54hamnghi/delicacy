@@ -3,8 +3,8 @@ from cytoolz.dicttoolz import keyfilter
 from lxml.etree import Element, tostring
 
 from delicacy.svglib.elements.element import ExtendedElement, SVGElement
-from delicacy.svglib.utils.style import Fill, Stroke
-from delicacy.svglib.utils.transform import Transform
+from delicacy.svglib.elements.peripheral.style import Fill, Stroke
+from delicacy.svglib.elements.peripheral.transform import Transform
 
 
 @pytest.fixture

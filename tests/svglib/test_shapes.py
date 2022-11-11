@@ -12,7 +12,7 @@ from delicacy.svglib.elements.shapes import (
     Rectangle,
     XShape,
 )
-from delicacy.svglib.utils.point import Point
+from delicacy.svglib.elements.peripheral.point import Point
 from delicacy.svglib.utils.utils import Size
 
 

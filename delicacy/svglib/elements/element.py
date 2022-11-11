@@ -7,8 +7,8 @@ from cytoolz.dicttoolz import keyfilter
 from lxml import etree
 from lxml.etree import _Element
 
-from delicacy.svglib.utils.style import Style
-from delicacy.svglib.utils.transform import Transform
+from delicacy.svglib.elements.peripheral.style import Style
+from delicacy.svglib.elements.peripheral.transform import Transform
 
 svg_define = partial(define, str=False, order=False)
 
