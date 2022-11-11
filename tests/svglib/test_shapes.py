@@ -3,6 +3,7 @@ from math import pi, tan
 import pytest
 from lxml.etree import Element, tostring
 
+from delicacy.svglib.elements.peripheral.point import Point
 from delicacy.svglib.elements.shapes import (
     Circle,
     ETriangle,
@@ -12,7 +13,6 @@ from delicacy.svglib.elements.shapes import (
     Rectangle,
     XShape,
 )
-from delicacy.svglib.elements.peripheral.point import Point
 from delicacy.svglib.utils.utils import Size
 
 
