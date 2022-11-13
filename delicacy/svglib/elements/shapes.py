@@ -25,7 +25,7 @@ class Circle(ExtendedElement):
     @classmethod
     def make_circle(cls, radius: float, cx: float, cy: float) -> "Circle":
         # mypy can't understand that attrs injects __init__
-        return cls(radius, Point(cx, cy))  # type: ignore
+        return cls(radius, (cx, cy))  # type: ignore
 
 
 @svg_define
@@ -40,8 +40,7 @@ class Line(ExtendedElement):
 
     @classmethod
     def make_line(cls, x1: float, y1: float, x2: float, y2: float) -> "Line":
-        # mypy can't understand that attrs injects __init__
-        return cls(Point(x1, y1), Point(x2, y2))  # type: ignore
+        return cls((x1, y1), (x2, y2))  # type: ignore
 
 
 @decorator
@@ -140,7 +139,7 @@ class Rectangle(ExtendedElement):
     def make_rectangle(
         cls, x: float, y: float, width: float, height: float
     ) -> "Rectangle":
-        return cls(Point(x, y), Size(width, height))  # type: ignore
+        return cls((x, y), (width, height))  # type: ignore
 
 
 def ETriangle(
