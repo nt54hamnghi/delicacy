@@ -25,7 +25,6 @@ class Stroke(Style):
 
     color: str = "black"
     opacity: float = field(default=1, validator=and_(ge(0), le(1)))
-
     width: float = 1
     linecap: str | None = field(
         default=None,

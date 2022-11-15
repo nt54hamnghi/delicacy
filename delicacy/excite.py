@@ -1,3 +1,6 @@
+import random
+from itertools import product
+from collections.abc import Iterator
 from random import choice, choices, randint
 
 from cytoolz.itertoolz import partition
@@ -36,8 +39,8 @@ def _randspace(
 def exaid(
     width: float = 512,
     height: float = 512,
-    x_density: int = 5,
-    y_density: int = 35,
+    x_density: int = 8,
+    y_density: int = 32,
     palette_func: PaletteFunc = pastel,
     n_colors: int = 5,
     seed: int | None = None,
@@ -53,7 +56,7 @@ def exaid(
 
         for start, end in partition(2, x_space):
             line = Line.make_line(start, y, end, y)
-            line.add_style(Stroke(choice(colors), width=6, linecap="round"))
+            line.add_style(Stroke(choice(colors), width=7, linecap="round"))
             canvas.append(line())
 
     return canvas
@@ -118,10 +121,13 @@ def _make_elm(side: int = 120, option: str = "rec"):
             )
 
 
+GENM_OPTIONS = "rec tri cir xsh".split()
+
+
 def genm(
     width: float = 512,
     height: float = 512,
-    x_density: int = 5,
+    x_density: int = 6,
     y_density: int = 12,
     palette_func: PaletteFunc = pastel,
     n_colors: int = 5,
@@ -131,16 +137,79 @@ def genm(
     canvas = get_canvas(width, height)
     palgen = PaletteGenerator(palette_func, seed)
     colors = tuple(c.to_hex() for c in palgen.generate(n_colors))
-    options = "rec tri cir xsh".split()
 
     for y in linspace(0, 512, y_density):
         for x in _randspace(0, 512, x_density):
             faded = _fade(
-                _make_elm(option=choice(options)),
+                _make_elm(option=choice(GENM_OPTIONS)),
                 num=choice([1, 3]),
                 location=(x, y),
                 color=choice(colors),
             )
             canvas.append(faded())
 
+    return canvas
+
+
+def linplane(
+    xrange: tuple[int, int] = (0, 512),
+    yrange: tuple[int, int] = (0, 512),
+    xk: int = 10,
+    yk: int = 10,
+) -> Iterator[tuple[int, int]]:
+    xspace = linspace(*xrange, n_samples=xk)
+    yspace = linspace(*yrange, n_samples=yk)
+    return product(xspace, yspace)
+
+
+def randplane(
+    xrange: tuple[int, int] = (0, 512),
+    yrange: tuple[int, int] = (0, 512),
+    xk: int = 10,
+    yk: int = 10,
+    rate: float = 0.2,
+) -> Iterator[tuple[int, int]]:
+    if not 0 < rate <= 1:
+        raise ValueError("rate must be in range (0, 1]")
+
+    plane = linplane(xrange, yrange, xk, yk)
+    yield from (coord for coord in plane if random.random() < rate)
+
+
+def paradx(
+    side: float = 512,
+    x_density: int = 10,
+    y_density: int = 10,
+    palette_func: PaletteFunc = pastel,
+    n_colors: int = 5,
+    seed: int | None = None,
+) -> _Element:
+    offset = 20
+
+    canvas = get_canvas()
+    palgen = PaletteGenerator(palette_func, seed)
+    colors = tuple(c.to_hex() for c in palgen.generate(n_colors))
+
+    _range = (offset, side // 2 - offset)
+    plane = randplane(_range, _range, x_density, y_density, rate=0.5)
+
+    cirs = []
+    for x, y in plane:
+        color = choice(colors)
+        cir = Circle.make_circle(10, x, y)
+        cir.apply_styles(Stroke(color), Fill(color))
+        cirs.append(cir)
+
+    cid = str(id(cirs))
+    grp = group(*cirs, id=cid)
+
+    canvas.append(grp())
+
+    flip = zip(product((0, side), repeat=2), product((1, -1), repeat=2))
+    next(flip)
+
+    for translate, scale in flip:
+        use = Use(cid)
+        use.add_transform(Transform().translate(*translate).scale(*scale))
+        canvas.append(use())
     return canvas
