@@ -10,7 +10,7 @@ from delicacy.svglib.elements.element import SVGElement, svg_define
 from delicacy.svglib.utils.utils import linspace
 
 
-@svg_define(init=False)
+@svg_define
 class BaseGradient(SVGElement):
     id: str
     spreadMethod: str = field(
@@ -31,7 +31,7 @@ class BaseGradient(SVGElement):
             "stop-opacity": str(float(opacity)),
         }
 
-        SubElement(self(), "stop", attrib=attributes)
+        SubElement(self.base, "stop", attrib=attributes)
 
 
 @svg_define
@@ -49,18 +49,6 @@ class LinearGradient(BaseGradient):
         attrib.update(id=self.id, spreadMethod=self.spreadMethod)
 
         self._element = Element("linearGradient", attrib=attrib)
-
-    @classmethod
-    def make_linear_gradient(
-        cls,
-        id: str,
-        x1: float,
-        y1: float,
-        x2: float,
-        y2: float,
-        spreadMethod: str,
-    ) -> "LinearGradient":
-        return cls(id, (x1, y1), (x2, y2), spreadMethod=spreadMethod)
 
 
 @svg_define
@@ -81,19 +69,6 @@ class RadialGradient(BaseGradient):
         )
 
         self._element = Element("radialGradient", attrib=attrib)
-
-    @classmethod
-    def make_radial_gradient(
-        cls: str,
-        id,
-        r: float,
-        cx: float,
-        cy: float,
-        fx: float,
-        fy: float,
-        spreadMethod: str,
-    ) -> "RadialGradient":
-        return cls(id, r, (cx, cy), (fx, fy), spreadMethod=spreadMethod)
 
 
 GradientT = TypeVar("GradientT", bound=BaseGradient)

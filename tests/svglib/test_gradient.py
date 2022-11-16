@@ -14,11 +14,6 @@ def test_create_base_gradient():
         BaseGradient("base", "pad")
 
 
-def test_base_gradient_add_stop():
-    with pytest.raises(AttributeError):
-        BaseGradient().add_stop(0.5, "black", 1)
-
-
 @pytest.mark.parametrize(
     "id x1 y1 x2 y2 spreadMethod".split(),
     (
@@ -29,9 +24,6 @@ def test_base_gradient_add_stop():
 )
 def test_create_linear_gradient(id, x1, y1, x2, y2, spreadMethod):
     linear = LinearGradient(id, (x1, y1), (x2, y2), spreadMethod=spreadMethod)
-    mlinear = LinearGradient.make_linear_gradient(
-        id, x1, y1, x2, y2, spreadMethod
-    )
 
     expected = dict(
         id=id,
@@ -42,8 +34,7 @@ def test_create_linear_gradient(id, x1, y1, x2, y2, spreadMethod):
         spreadMethod=spreadMethod,
     )
 
-    assert linear().attrib == expected
-    assert mlinear().attrib == expected
+    assert linear.base.attrib == expected
 
 
 @pytest.mark.parametrize(
@@ -58,9 +49,6 @@ def test_create_radial_gradient(id, r, cx, cy, fx, fy, spreadMethod):
     radial = RadialGradient(
         id, r, (cx, cy), (fx, fy), spreadMethod=spreadMethod
     )
-    mradial = RadialGradient.make_radial_gradient(
-        id, r, cx, cy, fx, fy, spreadMethod
-    )
 
     expected = dict(
         id=id,
@@ -72,8 +60,7 @@ def test_create_radial_gradient(id, r, cx, cy, fx, fy, spreadMethod):
         spreadMethod=spreadMethod,
     )
 
-    assert radial().attrib == expected
-    assert mradial().attrib == expected
+    assert radial.base.attrib == expected
 
 
 def test_invalid_spreadMethod():
@@ -95,9 +82,9 @@ def test_add_stop(gradient):
         "stop-opacity": "1.0",
     }
 
-    assert len(grad()) == 1
+    assert len(grad.base) == 1
 
-    child = grad()[0]
+    child = grad.base[0]
     assert child.tag == "stop"
     assert child.attrib == expected
 
@@ -125,7 +112,7 @@ def test_create_gradient(gradient):
     grad = create_gradient(gradient, colors)
 
     assert isinstance(grad, gradient)
-    assert len(grad()) == len(colors)
+    assert len(grad.base) == len(colors)
 
     space = linspace(0, 1, len(colors))
     for i, (c, l) in enumerate(zip(colors, space)):
@@ -136,6 +123,6 @@ def test_create_gradient(gradient):
             "stop-opacity": "1.0",
         }
 
-        child = grad()[i]
+        child = grad.base[i]
         assert child.tag == "stop"
         assert child.attrib == expected

@@ -14,5 +14,5 @@ def test_use(size):
         width, height = size
         expected.update(width=str(width), height=str(height))
 
-    assert use().tag == "use"
-    assert use().attrib == expected
+    assert use.base.tag == "use"
+    assert use.base.attrib == expected
