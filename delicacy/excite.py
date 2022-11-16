@@ -46,6 +46,7 @@ def exaid(
     n_colors: int = 5,
     seed: int | None = None,
 ) -> _Element:
+    linewidth = height * 6.5 // 512
 
     canvas = get_canvas(width, height)
     palgen = PaletteGenerator(palette_func, seed)
@@ -57,7 +58,9 @@ def exaid(
 
         for start, end in partition(2, x_space):
             line = Line.make_line(start, y, end, y)
-            line.add_style(Stroke(choice(colors), width=7, linecap="round"))
+            line.add_style(
+                Stroke(choice(colors), width=linewidth, linecap="round")
+            )
             canvas.append(line.base)
 
     return canvas
@@ -74,7 +77,7 @@ def _fade(
     fading_scale: float = 0.7,
 ) -> ExtendedElement:
 
-    scale = randint(10, 25) / 100 if scale is None else scale
+    scale = randint(15, 25) / 100 if scale is None else scale
     rotate = randint(0, 360) if rotate is None else rotate % 360
 
     eid = str(id(element))
@@ -139,15 +142,17 @@ def genm(
     canvas = get_canvas(width, height)
     palgen = PaletteGenerator(palette_func, seed)
     colors = tuple(c.to_hex() for c in palgen.generate(n_colors))
+    scale_limit = width * 10 // 512, width * 20 // 512
 
-    for y in linspace(0, 512, y_density):
-        for x in _randspace(0, 512, x_density):
+    for y in linspace(0, width, y_density):
+        for x in _randspace(0, height, x_density):
             faded = _fade(
                 _make_elm(option=choice(GENM_OPTIONS)),
                 num=choice([1, 3]),
+                scale=randint(*scale_limit) / 100,
+                color=choice(colors),
                 # use tuple instead of Point to improve performance
                 location=(x, y),  # type: ignore
-                color=choice(colors),
             )
             canvas.append(faded.base)
 
@@ -182,15 +187,16 @@ def randplane(
 
 def paradx(
     side: float = 512,
-    x_density: int = 10,
-    y_density: int = 10,
+    x_density: int = 9,
+    y_density: int = 9,
     palette_func: PaletteFunc = pastel,
     n_colors: int = 5,
     seed: int | None = None,
 ) -> _Element:
-    offset = 20
+    offset = side * 20 // 512
+    radius = side * 7 // 512
 
-    canvas = get_canvas()
+    canvas = get_canvas(side, side)
     palgen = PaletteGenerator(palette_func, seed)
     colors = tuple(c.to_hex() for c in palgen.generate(n_colors))
 
@@ -201,7 +207,7 @@ def paradx(
     cirs = []
     for x, y in plane:
         color = choice(colors)
-        cir = Circle.make_circle(10, x, y)
+        cir = Circle.make_circle(radius, x, y)
         cir.apply_styles(Stroke(color), Fill(color))
         cirs.append(cir)
 
