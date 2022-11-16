@@ -1,4 +1,5 @@
 import re
+from abc import ABC, abstractmethod
 from functools import cache, partial
 from typing import Any
 
@@ -14,8 +15,16 @@ svg_define = partial(define, str=False, order=False)
 
 
 @svg_define
-class SVGElement:
-    _element: _Element = field(init=False, repr=False)
+class SVGElement(ABC):
+    _element: _Element = field(repr=False, init=False)
+
+    @abstractmethod
+    def __attrs_post_init__(self) -> None:
+        """subclasses must define how to construct _element in this method"""
+
+    @property
+    def base(self):
+        return self._element
 
     def _element_repr(self) -> str:
         return repr(self._element)
@@ -26,22 +35,11 @@ class SVGElement:
     def __bytes__(self) -> bytes:
         return etree.tostring(self._element, pretty_print=True)
 
-    def __call__(self) -> _Element:
-        return self._element
-
     def set(self, tag: str, value: Any) -> None:
-        self().set(tag, value)
+        self.base.set(tag, value)
 
     def get(self, tag: str):
-        return self().get(tag)
-
-    @classmethod
-    def from_etree_element(cls, value: _Element) -> "SVGElement":
-        if not isinstance(value, _Element):
-            raise ValueError("not an etree._Element")
-        instance = cls()
-        instance._element = value
-        return instance
+        return self.base.get(tag)
 
 
 class ExtendedElement(SVGElement):
@@ -79,7 +77,7 @@ class ExtendedElement(SVGElement):
         super().set("style", _styles)
 
     def set_style(self, style: Style) -> None:
-        _styles = self().get("style")
+        _styles = self.base.get("style")
         if _styles is None:
             self.add_style(style)
         else:
@@ -95,16 +93,26 @@ class ExtendedElement(SVGElement):
         super().set("transform", value)
 
 
-def wraps(
-    tag, *childs: SVGElement, extended: bool = True, **kwds
-) -> SVGElement:
-    root = Element(tag, **kwds)
-    root.extend(child() for child in childs)
+class WrappingElement(ExtendedElement):
+    __slots__ = ()
 
-    element_cls = ExtendedElement if extended else SVGElement
-    return element_cls.from_etree_element(root)
+    def __init__(self, tag, **kwds: Any) -> None:
+        self._element = Element(tag, attrib=kwds)
+
+    def __attrs_post_init__(self) -> None:
+        ...
+
+    def __call__(self, *childs: SVGElement, **kwds: Any) -> "WrappingElement":
+        for k, v in kwds.items():
+            self._element.set(k, v)
+        self._element.extend(child.base for child in childs)
+        return self
 
 
-defs = partial(wraps, "defs", extended=False)
+def wraps(tag, *childs, **kwds):
+    return WrappingElement(tag, **kwds)(*childs)
+
+
+defs = partial(wraps, "defs")
 group = partial(wraps, "g")
 symbol = partial(wraps, "symbol")
