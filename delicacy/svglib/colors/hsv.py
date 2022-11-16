@@ -20,7 +20,10 @@ class HSVColor(namedtuple("HSVColor", ["hue", "sat", "val"])):
         if not VAL_MIN <= val <= VAL_MAX:
             raise ValueError("invalid value, must be in [0, 100]")
 
-        return super().__new__(cls, int(hue % HUE_MAX), int(sat), int(val))
+        hue, sat, val = int(hue % HUE_MAX), int(sat), int(val)
+
+        # mypy error: Argument 2 for "super" not an instance of argument 1
+        return super().__new__(cls, hue, sat, val)  # type: ignore
 
     def normalize(self) -> tuple[float, float, float]:
         hue, sat, val = self

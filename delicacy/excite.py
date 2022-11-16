@@ -2,6 +2,7 @@ import random
 from itertools import product
 from collections.abc import Iterator
 from random import choice, choices, randint
+from typing import cast
 
 from cytoolz.itertoolz import partition
 from lxml.etree import _Element
@@ -31,7 +32,7 @@ def _randspace(
 ):
     start, end = int(start), int(end)
     min_space = end // k
-    return tuple(
+    yield from (
         randint(start, (start := start + min_space)) for _ in range(k)
     )
 
@@ -57,7 +58,7 @@ def exaid(
         for start, end in partition(2, x_space):
             line = Line.make_line(start, y, end, y)
             line.add_style(Stroke(choice(colors), width=7, linecap="round"))
-            canvas.append(line())
+            canvas.append(line.base)
 
     return canvas
 
@@ -83,14 +84,15 @@ def _fade(
     fill = Fill(color="none")
     direction = choices([-1, 1], k=2)
 
-    width = 10 if num <= 1 else 20
-    opacity = 1
+    width = 10.0 if num <= 1 else 20.0
+    opacity = 1.0
 
     for i in range(num):
         distance = choices(range(*spread), k=2)
         new_location = ((i * ds * dr) for ds, dr in zip(distance, direction))
 
-        use = Use(href=eid, location=new_location)
+        # mypy can't understand that __init__ is injected by attrs
+        use = Use(eid, new_location)  # type: ignore
         use.apply_styles(Stroke(color, opacity, width), fill)
 
         width *= fading_scale
@@ -105,14 +107,14 @@ def _fade(
     return faded
 
 
-def _make_elm(side: int = 120, option: str = "rec"):
+def _make_elm(side: int = 120, option: str = "rec") -> ExtendedElement:
     match option:  # noqa
         case "rec":
             return Rectangle.make_rectangle(0, 0, side, side)
         case "tri":
             return ETriangle(side=side)
         case "cir":
-            return Circle(side // 2)
+            return Circle.make_circle(side // 2, 0, 0)
         case "xsh":
             return XShape(length=side)
         case _:
@@ -143,10 +145,11 @@ def genm(
             faded = _fade(
                 _make_elm(option=choice(GENM_OPTIONS)),
                 num=choice([1, 3]),
-                location=(x, y),
+                # use tuple instead of Point to improve performance
+                location=(x, y),  # type: ignore
                 color=choice(colors),
             )
-            canvas.append(faded())
+            canvas.append(faded.base)
 
     return canvas
 
@@ -159,7 +162,8 @@ def linplane(
 ) -> Iterator[tuple[int, int]]:
     xspace = linspace(*xrange, n_samples=xk)
     yspace = linspace(*yrange, n_samples=yk)
-    return product(xspace, yspace)
+    result = product(xspace, yspace)
+    return cast(Iterator[tuple[int, int]], result)
 
 
 def randplane(
@@ -190,7 +194,8 @@ def paradx(
     palgen = PaletteGenerator(palette_func, seed)
     colors = tuple(c.to_hex() for c in palgen.generate(n_colors))
 
-    _range = (offset, side // 2 - offset)
+    _range = (offset, (side // 2) - offset)
+    _range = cast(tuple[int, int], _range)
     plane = randplane(_range, _range, x_density, y_density, rate=0.5)
 
     cirs = []
@@ -203,13 +208,14 @@ def paradx(
     cid = str(id(cirs))
     grp = group(*cirs, id=cid)
 
-    canvas.append(grp())
+    canvas.append(grp.base)
 
     flip = zip(product((0, side), repeat=2), product((1, -1), repeat=2))
     next(flip)
 
     for translate, scale in flip:
-        use = Use(cid)
+        # mypy can't understand that __init__ is injected by attrs
+        use = Use(cid)  # type: ignore
         use.add_transform(Transform().translate(*translate).scale(*scale))
-        canvas.append(use())
+        canvas.append(use.base)
     return canvas
