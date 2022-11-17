@@ -1,4 +1,6 @@
 from itertools import count, product
+from operator import itemgetter
+from random import Random, choice, choices
 from unittest import mock
 
 import pytest
@@ -27,11 +29,14 @@ def int_linspace(*args, **kwds):
 
 
 @pytest.mark.parametrize("num", tuple(range(5, 16, 5)))
-@mock.patch("delicacy.svglib.colors.palette.random.randint", return_value=50)
+@mock.patch("delicacy.svglib.colors.palette.Random")
 class TestColorIter:
     @pytest.mark.parametrize(("hue_var", "sat_var"), ((25, 25), (30, 60)))
-    def test_analogous(self, mock_randint, num, hue_var, sat_var):
-        plt = tuple(analogous(num, hue_var, sat_var))
+    def test_analogous(self, mock_rng, num, hue_var, sat_var):
+        mock_rng.randint.return_value = 50
+
+        plt = analogous(num, mock_rng, hue_var, sat_var)
+        plt = tuple(plt)
         assert len(plt) == num
 
         hue_space = int_linspace(50 - hue_var, 50 + hue_var, num)
@@ -42,87 +47,116 @@ class TestColorIter:
             assert sat in sat_space
             assert val == 50
 
-    def test_monochromatic(self, mock_randint, num):
-        plt = tuple(monochromatic(num))
+    def test_monochromatic(self, mock_rng, num):
+        mock_rng.randint.return_value = 50
+        mock_rng.choices = choices
+
+        plt = monochromatic(num, mock_rng)
+        assert len(tuple(plt)) == num
+
+    def test_shade(self, mock_rng, num):
+        mock_rng.randint.return_value = 50
+
+        plt = shade(num, mock_rng)
+        plt = tuple(plt)
+
         assert len(plt) == num
 
-    def test_shade(self, mock_randint, num):
-        plt = tuple(shade(num))
         space = int_linspace(0, 100, num)
-
-        assert len(plt) == num
-
         for _, sat, val in plt:
             assert sat == 100
             assert val in space
 
-    def test_tint(self, mock_randint, num):
-        plt = tuple(tint(num))
-        space = int_linspace(0, 100, num)
+    def test_tint(self, mock_rng, num):
+        mock_rng.randint.return_value = 50
+
+        plt = tint(num, mock_rng)
+        plt = tuple(plt)
 
         assert len(plt) == num
 
+        space = int_linspace(0, 100, num)
         for _, sat, val in plt:
             assert sat in space
             assert val == 100
 
     @pytest.mark.parametrize(
-        "n_segments", range(2, 5), ids="complementary triad square".split()
+        "n_segments",
+        range(2, 5),
+        ids="complementary triad square".split(),
     )
-    def test_segment(self, mock_randint, num, n_segments):
+    def test_segment(self, mock_rng, num, n_segments):
+
+        mock_rng.randint.return_value = 50
+        mock_rng.choices = choices
+
+        plt = segment(n_segments, num, mock_rng)
+        plt = tuple(plt)
+
         hue_space = take(num, count(50, HUE_MAX // n_segments))
         hue_space = tuple(i % HUE_MAX for i in hue_space)
-
-        plt = tuple(segment(n_segments, num))
 
         for hue, sat, val in plt:
             assert hue in hue_space
             assert sat in range(70, SAT_MAX - 10)
             assert val in range(70, VAL_MAX + 1)
 
-    @pytest.mark.parametrize("_input", (JEWEL, PASTEL, EARTH, NEON))
-    def test_elizabeth(self, mock_randint, num, _input):
+    @pytest.mark.parametrize("n_segments", (-1, 0))
+    def test_segment_fail(self, mock_rng, num, n_segments):
+        with pytest.raises(ValueError):
+            tuple(segment(n_segments, num, mock_rng))
 
-        sat_range, val_range = _input.values()
-        plt = tuple(elizabeth(sat_range, val_range, num))
+    @pytest.mark.parametrize("_range", (JEWEL, PASTEL, EARTH, NEON))
+    def test_elizabeth(self, mock_rng, num, _range):
+        mock_rng.choice = choice
+        mock_rng.choices = choices
+
+        sat_range, val_range = _range.values()
+
+        plt = elizabeth(sat_range, val_range, num, mock_rng)
+        plt = tuple(plt)
         assert len(plt) == num
 
-        sats = set()
-        vals = set()
-
-        for _, sat, val in plt:
-            sats.add(sat)
-            assert sat in range(*sat_range)
-
-            vals.add(val)
-            assert val in range(*val_range)
+        sats = set(itemgetter(1)(color) for color in plt)
+        vals = set(itemgetter(2)(color) for color in plt)
 
         assert len(sats) == 1
         assert len(vals) == 1
 
 
-@pytest.mark.parametrize(("func"), palettes)
-def test_palette_gen(func):
-    pgen = PaletteGenerator(func)
-    plt = pgen.generate(5)
+@pytest.mark.parametrize(
+    ("func", "num"),
+    tuple(product(palettes, range(3, 6))),
+)
+class TestPaletteGenerator:
+    def test_palette_gen(self, func, num):
+        pgen = PaletteGenerator(func, Random(0))
+        plt0 = pgen.generate(num)
 
-    assert len(plt) == 5
-    assert isinstance(plt, tuple)
+        assert len(plt0) == num
+        assert isinstance(plt0, tuple)
 
+    @pytest.mark.parametrize("seed", range(1, 3))
+    def test_palette_gen_with_seed(self, func, num, seed):
+        pgen = PaletteGenerator(func, Random(0))
+        plt0 = pgen.generate(num)
+        plt1 = pgen.generate(num, seed)
 
-@pytest.mark.parametrize(("func", "seed"), list(product(palettes, range(2))))
-def test_palette_gen_with_seed(func, seed):
-    pgen_1 = PaletteGenerator(func, seed)
-    first = pgen_1.generate(5)
+        assert all(p0 != p1 for p0, p1 in zip(plt0, plt1))
 
-    pgen_2 = PaletteGenerator(func, seed)
-    second = pgen_2.generate(5)
+    @pytest.mark.parametrize("seed", [None, 1, 2])
+    def test_palette_gen_reproducible(self, func, num, seed):
+        pgen0 = PaletteGenerator(func, Random(0))
+        plt0 = pgen0.generate(num, seed)
 
-    assert first == second
+        pgen1 = PaletteGenerator(func, Random(0))
+        plt1 = pgen1.generate(num, seed)
+
+        assert all(p0 == p1 for p0, p1 in zip(plt0, plt1))
 
 
 def test_palette_fail():
     with pytest.raises(ValueError) as err:
-        PaletteGenerator(lambda _: ...)
+        PaletteGenerator(lambda _: ..., Random(0))
 
     assert str(err.value) == "not a valid palette function"

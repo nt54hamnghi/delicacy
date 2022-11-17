@@ -1,5 +1,5 @@
-import random
 from itertools import count, cycle
+from random import Random
 from typing import Callable, Iterator, TypeAlias
 
 from cytoolz import curry
@@ -29,38 +29,41 @@ def palette(func: PaletteFunc) -> PaletteFunc:
 
 @palette
 def analogous(
-    num: int, hue_variance: int = 25, sat_variance: int = 25
+    num: int,
+    rng: Random,
+    hue_variance: int = 25,
+    sat_variance: int = 25,
 ) -> ColorIter:
 
-    base_hue = random.randint(*HUE_RANGE)
+    base_hue = rng.randint(*HUE_RANGE)
     hues = linspace(base_hue - hue_variance, base_hue + hue_variance, num)
 
-    base_sat = random.randint(30, SAT_MAX - sat_variance)
+    base_sat = rng.randint(30, SAT_MAX - sat_variance)
 
     if (high_sat := base_sat + sat_variance) > 100:
         high_sat = SAT_MAX
 
     sats = cycle((base_sat, high_sat))
 
-    val = random.randint(50, VAL_MAX)
+    val = rng.randint(50, VAL_MAX)
 
     yield from (HSVColor(hue, sat, val) for hue, sat in zip(hues, sats))
 
 
 @palette
-def monochromatic(num: int) -> ColorIter:
+def monochromatic(num: int, rng: Random) -> ColorIter:
 
-    hue = random.randint(*HUE_RANGE)
-    sats = random.choices(range(SAT_MAX - 10), k=num)
-    vals = random.choices(range(50, VAL_MAX + 1), k=num)
+    hue = rng.randint(*HUE_RANGE)
+    sats = rng.choices(range(SAT_MAX - 10), k=num)
+    vals = rng.choices(range(50, VAL_MAX + 1), k=num)
 
     yield from (HSVColor(hue, sat, val) for sat, val in zip(sats, vals))
 
 
 @palette
-def shade(num: int) -> ColorIter:
+def shade(num: int, rng: Random) -> ColorIter:
 
-    hue = random.randint(*HUE_RANGE)
+    hue = rng.randint(*HUE_RANGE)
     sat = 100
     vals = linspace(0, 100, num)
 
@@ -68,9 +71,9 @@ def shade(num: int) -> ColorIter:
 
 
 @palette
-def tint(num: int) -> ColorIter:
+def tint(num: int, rng: Random) -> ColorIter:
 
-    hue = random.randint(*HUE_RANGE)
+    hue = rng.randint(*HUE_RANGE)
     sats = linspace(0, 100, num)
     val = 100
 
@@ -78,16 +81,16 @@ def tint(num: int) -> ColorIter:
 
 
 @curry
-def segment(n_segments: int, num: int) -> ColorIter:
-    if n_segments <= 0:
+def segment(n_segments: int, num: int, rng: Random) -> ColorIter:
+    if not n_segments > 0:
         raise ValueError("segments count must be non-negative")
 
-    base_hue = random.randint(*HUE_RANGE)
+    base_hue = rng.randint(*HUE_RANGE)
     hue_step = HUE_MAX // n_segments
 
     hues = count(base_hue, hue_step)
-    sats = random.choices(range(70, SAT_MAX - 10), k=num)
-    vals = random.choices(range(70, VAL_MAX + 1), k=num)
+    sats = rng.choices(range(70, SAT_MAX - 10), k=num)
+    vals = rng.choices(range(70, VAL_MAX + 1), k=num)
 
     yield from (
         HSVColor(hue, sat, val) for hue, sat, val in zip(hues, sats, vals)
@@ -109,12 +112,15 @@ square.__name__ = "square"
 # https://www.youtube.com/watch?v=GyVMoejbGFg
 @curry
 def elizabeth(
-    sat_range: tuple[int, int], val_range: tuple[int, int], num: int
+    sat_range: tuple[int, int],
+    val_range: tuple[int, int],
+    num: int,
+    rng: Random,
 ) -> ColorIter:
 
-    hues = sorted(random.choices(range(*HUE_RANGE), k=num))
-    sat = random.choice(range(*sat_range))
-    val = random.choice(range(*val_range))
+    hues = sorted(rng.choices(range(*HUE_RANGE), k=num))
+    sat = rng.choice(range(*sat_range))
+    val = rng.choice(range(*val_range))
 
     yield from (HSVColor(hue, sat, val) for hue in hues)
 
@@ -137,14 +143,14 @@ neon.__name__ = "neon"
 
 
 class PaletteGenerator:
-    def __init__(self, func: PaletteFunc, seed: int | None = None) -> None:
+    def __init__(self, func: PaletteFunc, rng: Random) -> None:
         if func not in palettes:
             raise ValueError("not a valid palette function")
         self.func = func
-        self.seed = seed
+        self.rng = rng
 
-    def generate(self, num: int = 5, *args, **kwds) -> tuple[HSVColor, ...]:
-        if self.seed is not None:
-            random.seed(self.seed)
-
-        return tuple(self.func(num=num, *args, **kwds))
+    def generate(
+        self, num: int = 5, seed: int | None = None, *args, **kwds
+    ) -> tuple[HSVColor, ...]:
+        rng = self.rng if seed is None else Random(seed)
+        return tuple(self.func(num=num, rng=rng, *args, **kwds))
