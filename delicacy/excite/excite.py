@@ -7,7 +7,12 @@ from typing import Callable, TypeAlias
 from cytoolz.itertoolz import partition
 from lxml.etree import _Element
 
-from delicacy.excite.helpers import fade, make_elm, randplane, randspace
+from delicacy.excite.helpers import (
+    fade,
+    make_elm,
+    rand_plane,
+    sorted_randspace,
+)
 from delicacy.svglib.colors.palette import (
     PaletteFunc,
     PaletteGenerator,
@@ -46,7 +51,7 @@ def ExAid(
 
     for y in linspace(0, height, y_density):
         n_lines = rng.randint(1, x_density)
-        x_space = randspace(rng, 0, width, n_lines * 2)
+        x_space = sorted_randspace(rng, 0, width, n_lines * 2)
 
         for (start, end) in partition(2, x_space):
             stroke = Stroke(
@@ -76,7 +81,7 @@ def Genm(
     scale_limit = width * 12 // 512, width * 24 // 512
 
     for y in linspace(0, width, y_density):
-        for x in randspace(rng, 0, height, x_density):
+        for x in sorted_randspace(rng, 0, height, x_density):
             faded = fade(
                 rng,
                 make_elm(option=rng.choice(GENM_OPTIONS)),
@@ -106,7 +111,7 @@ def ParaDX(
     radius = side * 6 // 512
 
     _range = (offset, (side // 2) - offset)
-    plane = randplane(
+    plane = rand_plane(
         rng, _range, _range, x_density, y_density, rate=0.6
     )  # type: ignore
 

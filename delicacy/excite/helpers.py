@@ -16,12 +16,12 @@ from delicacy.svglib.elements.use import Use
 from delicacy.svglib.utils.utils import linspace
 
 
-def randspace(
+def sorted_randspace(
     rng: Random, start: float = 0, end: float = 512, k: int = 10
 ) -> Iterator[int]:
 
     start, end = int(start), int(end)
-    min_space = end // k
+    min_space = (end - start) // k
     yield from (
         rng.randint(start, (start := start + min_space)) for _ in range(k)
     )
@@ -88,7 +88,7 @@ def make_elm(side: int = 120, option: str = "rec") -> ExtendedElement:
             )
 
 
-def linplane(
+def linear_plane(
     xrange: tuple[int, int] = (0, 512),
     yrange: tuple[int, int] = (0, 512),
     xk: int = 10,
@@ -100,7 +100,7 @@ def linplane(
     return product(xspace, yspace)  # type: ignore
 
 
-def randplane(
+def rand_plane(
     rng: Random,
     xrange: tuple[int, int] = (0, 512),
     yrange: tuple[int, int] = (0, 512),
@@ -113,5 +113,5 @@ def randplane(
     if not 0 < rate <= 1:
         raise ValueError("rate must be in range (0, 1]")
 
-    plane = linplane(xrange, yrange, xk, yk)
+    plane = linear_plane(xrange, yrange, xk, yk)
     yield from (coord for coord in plane if rng.random() < rate)
