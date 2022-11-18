@@ -125,32 +125,26 @@ class TestColorIter:
 
 
 @pytest.mark.parametrize(
-    ("func", "num"),
-    tuple(product(palettes, range(3, 6))),
+    ("func", "num", "to_hex"),
+    tuple(product(palettes, range(3, 6), [True, False])),
 )
 class TestPaletteGenerator:
-    def test_palette_gen(self, func, num):
-        pgen = PaletteGenerator(func, Random(0))
-        plt0 = pgen.generate(num)
+    @pytest.mark.parametrize("rng", (None, 0))
+    def test_palette_gen(self, func, num, to_hex, rng):
+        pgen = PaletteGenerator(func, rng)
+        plt = pgen.generate(num, to_hex)
 
-        assert len(plt0) == num
-        assert isinstance(plt0, tuple)
+        assert len(plt) == num
+        assert isinstance(plt, tuple)
 
-    @pytest.mark.parametrize("seed", range(1, 3))
-    def test_palette_gen_with_seed(self, func, num, seed):
-        pgen = PaletteGenerator(func, Random(0))
-        plt0 = pgen.generate(num)
-        plt1 = pgen.generate(num, seed)
+    @pytest.mark.parametrize("seed", range(3))
+    def test_palette_gen_reproducible(self, func, num, to_hex, seed):
 
-        assert all(p0 != p1 for p0, p1 in zip(plt0, plt1))
+        pgen0 = PaletteGenerator(func, seed)
+        plt0 = pgen0.generate(num, to_hex)
 
-    @pytest.mark.parametrize("seed", [None, 1, 2])
-    def test_palette_gen_reproducible(self, func, num, seed):
-        pgen0 = PaletteGenerator(func, Random(0))
-        plt0 = pgen0.generate(num, seed)
-
-        pgen1 = PaletteGenerator(func, Random(0))
-        plt1 = pgen1.generate(num, seed)
+        pgen1 = PaletteGenerator(func, seed)
+        plt1 = pgen1.generate(num, to_hex)
 
         assert all(p0 == p1 for p0, p1 in zip(plt0, plt1))
 
