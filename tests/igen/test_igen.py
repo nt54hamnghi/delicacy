@@ -1,5 +1,8 @@
 import os
 from hashlib import sha3_512
+from itertools import product
+from random import choices
+from string import ascii_letters, digits, punctuation
 from unittest import mock
 
 import pytest
@@ -90,7 +93,19 @@ def test_generate_max_length(img_gen):
         img_gen.generate("-" * 33)
 
 
-# def test_nothing(image_path):
-#     # print(type(tmpdir))
-#     print(image_path)
-#     print(sorted(image_path.iterdir()))
+@pytest.mark.parametrize(
+    ("size", "factor", "coll"),
+    tuple(product((256, 512), (0.8, 1.0), ["cat", "robot"])),
+)
+def test_generate(size, factor, coll):
+    collection_dir = COLLECTION_DIR / coll
+    collection = Collection(coll.capitalize(), collection_dir)
+    img_gen = ImageGenerator(collection)
+
+    phrase = "".join(choices(ascii_letters + digits + punctuation, k=32))
+    print(phrase)
+
+    img1 = img_gen.generate(phrase, size=(size, size), factor=factor)
+    img2 = img_gen.generate(phrase, size=(size, size), factor=factor)
+
+    assert img1.tobytes() == img2.tobytes()
