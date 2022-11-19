@@ -108,6 +108,9 @@ class WrappingElement(ExtendedElement):
         self._element.extend(child.base for child in childs)
         return self
 
+    def append(self, element: SVGElement) -> None:
+        self._element.append(element._element)
+
 
 def wraps(tag, *childs, **kwds):
     return WrappingElement(tag, **kwds)(*childs)
