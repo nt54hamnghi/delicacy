@@ -82,14 +82,16 @@ def Genm(
 
     for y in linspace(0, width, y_density):
         for x in sorted_randspace(rng, 0, height, x_density):
+
             faded = fade(
-                rng,
-                make_elm(option=rng.choice(GENM_OPTIONS)),
-                num=rng.choice([1, 3]),
-                scale=rng.randint(*scale_limit) / 100,  # type: ignore
+                rng=rng,
+                element=make_elm(option=rng.choice(GENM_OPTIONS)),
                 color=rng.choice(colors),
+                scale=rng.randint(*scale_limit) / 100,  # type: ignore
+                num=rng.choice((1, 3)),
                 location=(x, y),  # type: ignore
             )
+
             canvas.append(faded.base)
 
     return canvas
