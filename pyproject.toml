@@ -14,8 +14,7 @@ decorator = "5.1.*"
 cytoolz = "0.12.*"
 lxml = "4.9.*"
 Pillow = "9.2.*"
-cairosvg = "^2.5.2"
-matplotlib = "^3.6.2"
+Wand = "0.6.10"
 
 
 [tool.poetry.dev-dependencies]
