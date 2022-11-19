@@ -194,3 +194,10 @@ class TestWrappingElement:
         assert wrp_0 is not wrp_1
         assert isinstance(wrp_0, WrappingElement)
         assert isinstance(wrp_1, WrappingElement)
+
+    def test_append(self, tag, childs):
+        wrp = WrappingElement(tag)
+        for child in childs:
+            wrp.append(child)
+
+        assert len(wrp.base) == len(childs)
