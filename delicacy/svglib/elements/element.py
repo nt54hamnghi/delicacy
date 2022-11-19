@@ -35,11 +35,11 @@ class SVGElement(ABC):
     def __bytes__(self) -> bytes:
         return etree.tostring(self._element, pretty_print=True)
 
-    def set(self, tag: str, value: Any) -> None:
-        self.base.set(tag, value)
+    def set(self, attr: str, value: Any) -> None:
+        self.base.set(attr, value)
 
-    def get(self, tag: str):
-        return self.base.get(tag)
+    def get(self, attr: str):
+        return self.base.get(attr)
 
 
 class ExtendedElement(SVGElement):
