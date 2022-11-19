@@ -9,6 +9,7 @@ from lxml.etree import _Element
 
 from delicacy.excite.helpers import (
     fade,
+    generate_id,
     make_elm,
     rand_plane,
     sorted_randspace,
@@ -18,7 +19,7 @@ from delicacy.svglib.colors.palette import (
     PaletteGenerator,
     palettes,
 )
-from delicacy.svglib.elements.element import group
+from delicacy.svglib.elements.element import WrappingElement
 from delicacy.svglib.elements.peripheral.style import Fill, Stroke
 from delicacy.svglib.elements.peripheral.transform import Transform
 from delicacy.svglib.elements.shapes import Circle, Line
@@ -117,15 +118,14 @@ def ParaDX(
         rng, _range, _range, x_density, y_density, rate=0.6
     )  # type: ignore
 
-    cirs = []
+    cid = generate_id(rng.getstate())
+    grp = WrappingElement("g", id=cid)
+
     for x, y in plane:
         color = rng.choice(colors)
         cir = Circle.make_circle(radius, x, y)
         cir.apply_styles(Stroke(color), Fill(color))
-        cirs.append(cir)
-
-    cid = str(id(cirs))
-    grp = group(*cirs, id=cid)
+        grp.append(cir)
 
     canvas.append(grp.base)
 
@@ -133,7 +133,6 @@ def ParaDX(
     next(flip)
 
     for translate, scale in flip:
-        # mypy can't understand that __init__ is injected by attrs
         use = Use(cid)  # type: ignore
         use.add_transform(Transform().translate(*translate).scale(*scale))
         canvas.append(use.base)
