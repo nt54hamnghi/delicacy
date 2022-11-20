@@ -1,12 +1,6 @@
-import attrs
 import pytest
 
-from delicacy.svglib.elements.peripheral.style import Fill, Stroke, Style
-
-
-def test_create_style():
-    with pytest.raises(attrs.exceptions.NotAnAttrsClassError):
-        str(Style())
+from delicacy.svglib.elements.peripheral.style import Fill, Stroke
 
 
 def test_create_stroke_with_default():

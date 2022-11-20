@@ -1,10 +1,11 @@
 from typing import ClassVar
 
-from attrs import asdict, field, frozen
+from attrs import field, frozen
 from attrs.validators import and_, ge, in_, le
 
 
 class Style:
+    __slots__ = ()
     _main_property: ClassVar[str] = ""
 
     def __str__(self) -> str:
@@ -12,10 +13,11 @@ class Style:
         prop = self._main_property
         keyfunc = lambda k: name if k == prop else f"{name}-{k}"  # noqa
 
+        keys = self.__slots__
+        vals = (getattr(self, key) for key in keys)
+
         return " ".join(
-            f"{keyfunc(key)}: {val};"
-            for key, val in asdict(self).items()
-            if val is not None
+            f"{keyfunc(k)}: {v};" for k, v in zip(keys, vals) if v is not None
         )
 
 
