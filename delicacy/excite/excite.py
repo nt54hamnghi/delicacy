@@ -2,7 +2,7 @@ import random
 from collections.abc import Sequence
 from itertools import product
 from random import Random
-from typing import Callable, TypeAlias
+from typing import Callable, TypeAlias, cast
 
 from cytoolz.itertoolz import partition
 from lxml.etree import _Element
@@ -114,6 +114,7 @@ def ParaDX(
     radius = side * 6 // 512
 
     _range = (offset, (side // 2) - offset)
+    _range = cast(tuple[int, int], _range)
     plane = rand_plane(
         rng, _range, _range, x_density, y_density, rate=0.6
     )  # type: ignore
@@ -152,7 +153,7 @@ class BGMaker:
         self.maker = maker
 
         self.rng = random if seed is None else Random(seed)
-        palette = self.rng.choice(palettes) if palette is None else palette
+        palette = self.rng.choice(palettes) if palette is None else palette  # type: ignore
 
         self.palette_gen = PaletteGenerator(palette, seed)
 

@@ -60,7 +60,7 @@ def rand_plane(
     xk: int = 10,
     yk: int = 10,
     rate: float = 0.2,
-) -> Iterator[int]:
+) -> Iterator[tuple[int, int]]:
 
     """randomly dropping points from a linear plane"""
     if not 0 < rate <= 1:
@@ -88,14 +88,14 @@ def make_elm(side: int = 120, option: str = "rec") -> ExtendedElement:
 
 def spreadit(
     rng: Random,
-    spread: tuple[float, float],
+    spread: tuple[int, int],
     k: int = 3,
 ):
     direction = rng.choices((-1, 1), k=2)
-    spread = range(*spread)
+    spread_range = range(*spread)
 
     for i, (x, y) in enumerate(repeat(direction, times=k)):
-        dx, dy = rng.choices(spread, k=2)
+        dx, dy = rng.choices(spread_range, k=2)
         yield i * x * dx, i * y * dy
 
 
@@ -111,8 +111,8 @@ def fade(
     fading_scale: float = 0.8,
 ) -> ExtendedElement:
 
-    opacity = 1
-    width = 10 if num <= 1 else 20
+    opacity = 1.0
+    width = 10.0 if num <= 1 else 20.0
     rotate = rng.randint(0, 360) if rotate is None else rotate % 360
     fill = Fill(color="none")
 

@@ -1,6 +1,5 @@
 import os
 from collections.abc import Iterable, Iterator
-from functools import cache
 from os import PathLike
 from typing import AnyStr, TypeAlias
 
@@ -14,14 +13,14 @@ class Collection:
     name: str
     path: PathType
     layer_names: Iterable[str] = field(converter=tuple)
+    layer_paths: Iterable[PathType] = field(init=False)
 
     @layer_names.default
     def _(self) -> list[str]:
         return sorted(os.listdir(self.path))
 
-    @property
-    @cache
-    def layer_paths(self) -> Iterator[PathType]:
+    @layer_paths.default
+    def _(self) -> list[PathType]:
         return sorted(d.path for d in os.scandir(self.path))
 
     @property

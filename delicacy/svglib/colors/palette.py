@@ -152,7 +152,7 @@ class PaletteGenerator:
 
     def generate(
         self, num: int = 5, to_hex: bool = False, *args, **kwds
-    ) -> tuple[HSVColor, ...]:
+    ) -> tuple[HSVColor | str, ...]:
         colors = self.palette(num=num, rng=self.rng, *args, **kwds)
         if to_hex:
             return tuple(c.to_hex() for c in colors)

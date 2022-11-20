@@ -13,7 +13,7 @@ class Style:
         prop = self._main_property
         keyfunc = lambda k: name if k == prop else f"{name}-{k}"  # noqa
 
-        keys = self.__slots__
+        keys: tuple = self.__slots__
         vals = (getattr(self, key) for key in keys)
 
         return " ".join(
