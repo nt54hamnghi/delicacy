@@ -85,7 +85,7 @@ def test_igen_pick_layers(mock_hash, image_path, hashed):
 
     result = list(igen._pick_layers(b""))
 
-    assert result == expected
+    assert result == sorted(expected)
 
 
 def test_generate_max_length(img_gen):
