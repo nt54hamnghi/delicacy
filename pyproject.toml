@@ -38,7 +38,7 @@ pretty = true
 [[tool.mypy.overrides]]
 module = [
     "bitstring.*",
-    "cairosvg.*",
+    "wand.*",
     "cytoolz.*",
     "config"
 ]
