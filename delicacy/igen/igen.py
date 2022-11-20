@@ -74,8 +74,6 @@ class ImageGenerator:
         lx, ly = int(fx * factor), int(fy * factor)
         box = (fx - lx) // 2, fy - ly
 
-        frame = Image.new(mode="RGBA", size=size)
-
         layers = cast(Iterator[str], layers)
 
         with Image.open(next(layers)) as base:
@@ -84,8 +82,10 @@ class ImageGenerator:
                     base.paste(img, box=(0, 0), mask=img)
 
         base = base.resize(size=(lx, ly))
-        frame.paste(base, box, mask=base)
-        return frame
+
+        with Image.new(mode="RGBA", size=size) as frame:
+            frame.paste(base, box, mask=base)
+            return frame
 
     def generate(self, phrase: str, *args, **kwds) -> Image.Image:
         if len(phrase) > 32:
