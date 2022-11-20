@@ -24,8 +24,10 @@ from delicacy.svglib.utils.utils import linspace
 
 
 def generate_id(*args):
-    state = "".join(str(item) for item in args)
-    return sha3_256(state.encode()).hexdigest()[:32]
+    hs = sha3_256()
+    for item in args:
+        hs.update(str(item).encode())
+    return hs.hexdigest()[:32]
 
 
 def sorted_randspace(
@@ -114,17 +116,7 @@ def fade(
     rotate = rng.randint(0, 360) if rotate is None else rotate % 360
     fill = Fill(color="none")
 
-    eid = generate_id(
-        rng.getstate(),
-        element,
-        color,
-        scale,
-        num,
-        location,
-        rotate,
-        spread,
-        fading_scale,
-    )
+    eid = generate_id(rng.getstate())
 
     defs_element = defs(group(element, id=eid))
 
