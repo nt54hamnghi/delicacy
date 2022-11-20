@@ -1,22 +1,10 @@
-from config import COLLECTION_DIR
-
-from delicacy.igen.collection import Collection
-from delicacy.igen.igen import ImageGenerator
+from delicacy.generate import generate
+from delicacy.excite.excite import ExAid
 
 
-def main():
-    robot_collection = Collection("Robot", COLLECTION_DIR / "robot")
-    print(robot_collection)
-
-    img_gen = ImageGenerator(robot_collection)
-    img_gen.generate("hamnghi", size=(512, 512))
-    # img_gen.generate("hamnghi", size=(512, 512)).save("demo.png")
-
-
-def sandbox():
-    ...
+def main(phrase: str):
+    generate(phrase, ExAid)
 
 
 if __name__ == "__main__":
-    main()
-    # sandbox()
+    main("")
