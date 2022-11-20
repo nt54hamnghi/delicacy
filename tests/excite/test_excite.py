@@ -1,11 +1,11 @@
 from itertools import product
 from random import choices
-from delicacy.excite.excite import BGMaker, makers
 
 import pytest
 from lxml.etree import tostring
 
-from delicacy.svglib.utils.utils import svg2img
+from delicacy.excite.excite import BGMaker, makers
+from delicacy.svglib.utils.utils import materialize
 
 
 @pytest.mark.parametrize(
@@ -14,13 +14,13 @@ from delicacy.svglib.utils.utils import svg2img
 )
 def test_bgmaker_reproducible(maker, seed):
     bg_maker0 = BGMaker(maker, seed=seed)
-    bg0 = tostring(bg_maker0.generate())
+    bg0 = bg_maker0.generate()
 
     bg_maker1 = BGMaker(maker, seed=seed)
-    bg1 = tostring(bg_maker1.generate())
+    bg1 = bg_maker1.generate()
 
-    assert bg0 == bg1
-    assert svg2img(bg0) == svg2img(bg1)
+    assert tostring(bg0) == tostring(bg1)
+    assert materialize(bg0) == materialize(bg1)
 
 
 def test_bgmaker_fail():

@@ -2,14 +2,15 @@ import random
 from itertools import product, repeat
 from random import Random
 from unittest import mock
+
 import pytest
 
 from delicacy.excite.helpers import (
     fade,
     linear_plane,
+    make_elm,
     rand_plane,
     sorted_randspace,
-    make_elm,
     spreadit,
 )
 from delicacy.svglib.elements.peripheral.transform import Transform

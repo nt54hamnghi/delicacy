@@ -3,11 +3,11 @@ from io import BytesIO
 from itertools import count
 from typing import NamedTuple
 
-from cairosvg import svg2png
 from cytoolz.itertoolz import take
 from lxml import etree
-from lxml.etree import Element, _Element
-from PIL import Image
+from lxml.etree import Element, _Element, tostring
+from PIL import Image as PilImg
+from wand.image import Image as WandImg
 
 
 class Size(NamedTuple):
@@ -47,15 +47,11 @@ def linspace(start: float, stop: float, n_samples: int) -> Iterator[float]:
     return take(n_samples, space)
 
 
-def svg2img(bytestring: bytes, *args, **kwds) -> Image.Image:
-    img_bytes = svg2png(bytestring, *args, **kwds)
-    byte_io = BytesIO(img_bytes)
-    return Image.open(byte_io)
+def materialize(canvas: _Element, background: str = "#0c0135") -> WandImg:
+    blob = tostring(canvas)
+    return WandImg(blob=blob, format="svg", background=background)
 
 
-def canvas2img(
-    canvas: _Element, bg_color="black", *args, **kwds
-) -> Image.Image:
-    return svg2img(
-        etree.tostring(canvas), background_color=bg_color, *args, **kwds
-    )
+def wand2pil(wand_image: WandImg) -> PilImg.Image:
+    bytesio = BytesIO(wand_image.make_blob("png"))
+    return PilImg.open(bytesio)
