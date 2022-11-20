@@ -1,9 +1,11 @@
+from hashlib import sha3_512
 import random
 from collections.abc import Sequence
 from itertools import product
 from random import Random
 from typing import Callable, TypeAlias, cast
 
+from bitstring import BitArray
 from cytoolz.itertoolz import partition
 from lxml.etree import _Element
 
@@ -162,3 +164,13 @@ class BGMaker:
     ) -> Canvas:
         colors = self.palette_gen.generate(n_colors, to_hex=True)
         return self.maker(width, height, colors, self.rng)
+
+    @classmethod
+    def from_phrase(cls, phrase: str, maker: MakerFunc) -> "BGMaker":
+        if len(phrase) > 32:
+            raise ValueError("phrase length must be less than 32")
+
+        hex = sha3_512(phrase.encode()).hexdigest()
+        seed = BitArray(hex=hex).uint
+
+        return cls(maker, seed=seed)
