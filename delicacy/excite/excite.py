@@ -1,9 +1,8 @@
-from hashlib import sha3_512
-import random
 from collections.abc import Sequence
+from hashlib import sha3_512
 from itertools import product
 from random import Random
-from typing import Callable, TypeAlias, cast
+from typing import Callable, TypeAlias
 
 from bitstring import BitArray
 from cytoolz.itertoolz import partition
@@ -17,9 +16,9 @@ from delicacy.excite.helpers import (
     sorted_randspace,
 )
 from delicacy.svglib.colors.palette import (
+    PREFERRED_PALETTES,
     PaletteFunc,
     PaletteGenerator,
-    palettes,
 )
 from delicacy.svglib.elements.element import WrappingElement
 from delicacy.svglib.elements.peripheral.style import Fill, Stroke
@@ -30,6 +29,7 @@ from delicacy.svglib.utils.utils import get_canvas, linspace
 
 Canvas: TypeAlias = _Element
 MakerFunc: TypeAlias = Callable[..., Canvas]
+
 
 makers: list[MakerFunc] = []
 
@@ -50,6 +50,9 @@ def ExAid(
 ) -> Canvas:
 
     canvas = get_canvas(width, height)
+
+    # proportional scale with respect to the standard frame of 512 x 512
+    # so the patterns can appear nicely
     linewidth = height * 6.5 // 512
 
     for y in linspace(0, height, y_density):
@@ -81,6 +84,9 @@ def Genm(
 ) -> Canvas:
 
     canvas = get_canvas(width, height)
+
+    # proportional scale with respect to the standard frame of 512 x 512
+    # so the patterns can appear nicely
     scale_limit = width * 12 // 512, width * 24 // 512
 
     for y in linspace(0, width, y_density):
@@ -112,14 +118,14 @@ def ParaDX(
     side = min(width, height)
     canvas = get_canvas(side, side)
 
-    offset = side * 20 // 512
-    radius = side * 6 // 512
+    # proportional scale with respect to the standard frame of 512 x 512
+    # so the patterns can appear nicely
+    offset, radius = side * 20 // 512, side * 6 // 512
 
     _range = (offset, (side // 2) - offset)
-    _range = cast(tuple[int, int], _range)
     plane = rand_plane(
-        rng, _range, _range, x_density, y_density, rate=0.6
-    )  # type: ignore
+        rng, _range, _range, x_density, y_density, rate=0.6  # type: ignore
+    )
 
     cid = generate_id(rng.getstate())
     grp = WrappingElement("g", id=cid)
@@ -142,7 +148,7 @@ def ParaDX(
     return canvas
 
 
-class BGMaker:
+class BackgroundMaker:
     def __init__(
         self,
         maker: MakerFunc,
@@ -151,12 +157,11 @@ class BGMaker:
     ) -> None:
         if maker not in makers:
             raise ValueError("not a valid maker function")
-
         self.maker = maker
+        self.rng = Random(seed)
 
-        self.rng = random if seed is None else Random(seed)
-        palette = self.rng.choice(palettes) if palette is None else palette  # type: ignore
-
+        if palette is None:
+            palette = self.rng.choice(PREFERRED_PALETTES)
         self.palette_gen = PaletteGenerator(palette, seed)
 
     def generate(
@@ -166,7 +171,7 @@ class BGMaker:
         return self.maker(width, height, colors, self.rng)
 
     @classmethod
-    def from_phrase(cls, phrase: str, maker: MakerFunc) -> "BGMaker":
+    def from_phrase(cls, phrase: str, maker: MakerFunc) -> "BackgroundMaker":
         if len(phrase) > 32:
             raise ValueError("phrase length must be less than 32")
 

@@ -16,7 +16,7 @@ from delicacy.svglib.colors.palette import (
     analogous,
     elizabeth,
     monochromatic,
-    palettes,
+    Palettes,
     segment,
     shade,
     tint,
@@ -126,7 +126,7 @@ class TestColorIter:
 
 @pytest.mark.parametrize(
     ("func", "num", "to_hex"),
-    tuple(product(palettes, range(3, 6), [True, False])),
+    tuple(product(Palettes, range(3, 6), [True, False])),
 )
 class TestPaletteGenerator:
     @pytest.mark.parametrize("rng", (None, 0))

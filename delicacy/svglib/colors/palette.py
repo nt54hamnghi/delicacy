@@ -1,4 +1,3 @@
-import random
 from itertools import count, cycle
 from random import Random
 from typing import Callable, Iterator, TypeAlias
@@ -20,11 +19,11 @@ from delicacy.svglib.utils.utils import linspace
 
 ColorIter: TypeAlias = Iterator[HSVColor]
 PaletteFunc: TypeAlias = Callable[..., ColorIter]
-palettes: list[PaletteFunc] = []
+Palettes: list[PaletteFunc] = []
 
 
 def palette(func: PaletteFunc) -> PaletteFunc:
-    palettes.append(func)
+    Palettes.append(func)
     return func
 
 
@@ -143,12 +142,15 @@ neon = palette(elizabeth(**NEON))
 neon.__name__ = "neon"
 
 
+PREFERRED_PALETTES = (analogous, tint, shade, square, jewel, pastel, neon)
+
+
 class PaletteGenerator:
     def __init__(self, palette: PaletteFunc, seed: int | None = None) -> None:
-        if palette not in palettes:
+        if palette not in Palettes:
             raise ValueError("not a valid palette function")
         self.palette = palette
-        self.rng = random if seed is None else Random(seed)
+        self.rng = Random(seed)
 
     def generate(
         self, num: int = 5, to_hex: bool = False, *args, **kwds
