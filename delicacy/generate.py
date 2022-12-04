@@ -1,14 +1,11 @@
 from PIL.Image import Image as PilImg
 from wand.image import Image as WandImg
 
+from delicacy.config import COLLECTION_DIR
+from delicacy.excite.excite import BackgroundMaker, MakerFunc
 from delicacy.igen.collection import Collection
 from delicacy.igen.igen import ImageGenerator
-
 from delicacy.svglib.utils.utils import materialize, wand2pil
-from delicacy.excite.excite import BGMaker, MakerFunc
-
-from delicacy.config import COLLECTION_DIR
-
 
 robot_path = COLLECTION_DIR / "robot"
 robot_collection = Collection("Robot", robot_path)
@@ -24,7 +21,7 @@ def combine(foreground: PilImg, background: WandImg) -> PilImg:
 def make_background(
     phrase: str, maker: MakerFunc, width: float = 320, height: float = 320
 ) -> PilImg:
-    bgmaker = BGMaker.from_phrase(phrase, maker)
+    bgmaker = BackgroundMaker.from_phrase(phrase, maker)
 
     canvas = bgmaker.generate(width, height)
     return materialize(canvas)

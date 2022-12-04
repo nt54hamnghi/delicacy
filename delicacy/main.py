@@ -4,9 +4,8 @@ from io import BytesIO
 from fastapi import FastAPI, Query
 from fastapi.responses import Response
 
-from delicacy.generate import generate
 from delicacy.excite.excite import ExAid, Genm, ParaDX
-
+from delicacy.generate import generate
 
 app = FastAPI()
 

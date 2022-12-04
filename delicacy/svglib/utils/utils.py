@@ -47,7 +47,7 @@ def linspace(start: float, stop: float, n_samples: int) -> Iterator[float]:
     return take(n_samples, space)
 
 
-def materialize(canvas: _Element, background: str = "#0c0135") -> WandImg:
+def materialize(canvas: _Element, background: str = "#162447") -> WandImg:
     blob = tostring(canvas)
     return WandImg(blob=blob, format="svg", background=background)
 

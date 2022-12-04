@@ -1,7 +1,6 @@
 from collections.abc import Iterator
 from hashlib import sha3_256
-from itertools import accumulate, product, repeat
-from operator import mul
+from itertools import product, repeat
 from random import Random
 
 from delicacy.svglib.elements.element import (
@@ -37,7 +36,8 @@ def sorted_randspace(
     start, end = int(start), int(end)
     min_space = (end - start) // k
     yield from (
-        rng.randint(start, (start := start + min_space)) for _ in range(k)
+        rng.randint(start, (start := start + min_space))  # noqa F481
+        for _ in range(k)
     )
 
 
@@ -48,6 +48,7 @@ def linear_plane(
     yk: int = 10,
 ) -> Iterator[tuple[int, int]]:
     """a linear plane: a cartisan product of 2 linear spaces"""
+
     xspace = linspace(*xrange, n_samples=xk)
     yspace = linspace(*yrange, n_samples=yk)
     return product(xspace, yspace)  # type: ignore
@@ -61,8 +62,8 @@ def rand_plane(
     yk: int = 10,
     rate: float = 0.2,
 ) -> Iterator[tuple[int, int]]:
-
     """randomly dropping points from a linear plane"""
+
     if not 0 < rate <= 1:
         raise ValueError("rate must be in range (0, 1]")
 
@@ -71,6 +72,8 @@ def rand_plane(
 
 
 def make_elm(side: int = 120, option: str = "rec") -> ExtendedElement:
+    """make shape based on option"""
+
     match option:  # noqa
         case "rec":
             return Rectangle.make_rectangle(0, 0, side, side)
@@ -87,10 +90,10 @@ def make_elm(side: int = 120, option: str = "rec") -> ExtendedElement:
 
 
 def spreadit(
-    rng: Random,
-    spread: tuple[int, int],
-    k: int = 3,
-):
+    rng: Random, spread: tuple[int, int], k: int = 3
+) -> Iterator[tuple[int, int]]:
+    """used in fade, dictates how to spread the faded effects"""
+
     direction = rng.choices((-1, 1), k=2)
     spread_range = range(*spread)
 
@@ -110,6 +113,7 @@ def fade(
     spread: tuple[int, int] = (15, 25),
     fading_scale: float = 0.8,
 ) -> ExtendedElement:
+    """Create fading effect on an element shape"""
 
     opacity = 1.0
     width = 10.0 if num <= 1 else 20.0
