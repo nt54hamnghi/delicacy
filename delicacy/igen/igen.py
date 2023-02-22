@@ -10,20 +10,22 @@ from PIL import Image
 from delicacy.igen.collection import Collection, PathType
 
 
+# Protocol definitions are not supposed to be executed, thus excluded from coverage report
 class SupportHashing(Protocol):
-    def digest(self) -> bytes:
-        ...
+    def digest(self) -> bytes:  # pragma: no cover
+        pass
 
-    def hexdigest(self) -> str:
-        ...
+    def hexdigest(self) -> str:  # pragma: no cover
+        pass
 
-    def update(self, __data: bytes) -> None:
-        ...
+    def update(self, __data: bytes) -> None:  # pragma: no cover
+        pass
 
 
+# Protocol definitions are not supposed to be executed, thus excluded from coverage report
 class SupportStr(Protocol):
-    def __str__(self) -> str:
-        ...
+    def __str__(self) -> str:  # pragma: no cover
+        pass
 
 
 HashFunction: TypeAlias = Callable[..., SupportHashing]
