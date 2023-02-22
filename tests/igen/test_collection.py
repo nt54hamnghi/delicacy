@@ -3,8 +3,8 @@ import pytest
 from delicacy.config import COLLECTION_DIR
 from delicacy.igen.collection import Collection
 
-LAYER_NAMES_AS_ARGUMENT = ("body", "fur", "eyes", "mount", "accessories")
-LAYER_NAMES_BY_DEFAULT = (
+PASSED_LAYER_NAMES = ("body", "fur", "eyes", "mount", "accessories")
+DEFAULT_LAYER_NAMES = (
     "000#00body",
     "001#01fur",
     "002#02eyes",
@@ -13,36 +13,44 @@ LAYER_NAMES_BY_DEFAULT = (
 )
 
 
+@pytest.fixture
+def collection_dir():
+    return COLLECTION_DIR / "cat"
+
+
+@pytest.fixture
+def layer_paths(collection_dir):
+    return tuple(str(d) for d in collection_dir.iterdir() if d.is_dir())
+
+
+def test_layer_names_converted_to_tuple(collection_dir):
+    cat = Collection("Cat", collection_dir, list(PASSED_LAYER_NAMES))
+
+    assert isinstance(cat.layer_names, tuple)
+
+
 @pytest.mark.parametrize(
     ("layer_names", "expected"),
     (
-        (LAYER_NAMES_AS_ARGUMENT, LAYER_NAMES_AS_ARGUMENT),
-        (list(LAYER_NAMES_AS_ARGUMENT), LAYER_NAMES_AS_ARGUMENT),
-        (None, LAYER_NAMES_BY_DEFAULT),
+        (PASSED_LAYER_NAMES, PASSED_LAYER_NAMES),
+        (None, DEFAULT_LAYER_NAMES),
     ),
-    ids=("tuple", "list", "default"),
+    ids=("passed", "default"),
 )
-def test_create_collection(layer_names, expected):
-    # collection directory
-    cdir = COLLECTION_DIR / "cat"
-
+def test_create_collection(
+    layer_names, expected, collection_dir, layer_paths
+):
     if layer_names is None:
-        cat = Collection("Cat", cdir)
+        cat = Collection("Cat", collection_dir)
     else:
-        cat = Collection("Cat", cdir, layer_names)
+        cat = Collection("Cat", collection_dir, layer_names)
 
-    layer_dir = tuple(str(d) for d in cdir.iterdir() if d.is_dir())
-
-    assert isinstance(cat.layer_names, tuple)
-    assert tuple(cat.layer_paths) == layer_dir
+    assert tuple(cat.layer_paths) == layer_paths
     assert cat.layer_names == expected
 
 
-def test_collection_layers_property():
-    # collection directory
-    cdir = COLLECTION_DIR / "cat"
-    cat = Collection("Cat", cdir)
-    layer_dir = tuple(str(d) for d in cdir.iterdir() if d.is_dir())
+def test_collection_layers_property(collection_dir, layer_paths):
+    cat = Collection("Cat", collection_dir)
 
     assert isinstance(cat.layers, zip)
-    assert list(cat.layers) == list(zip(LAYER_NAMES_BY_DEFAULT, layer_dir))
+    assert list(cat.layers) == list(zip(DEFAULT_LAYER_NAMES, layer_paths))
