@@ -12,14 +12,14 @@ PathType: TypeAlias = PathLike | AnyStr
 class Collection:
     name: str
     path: PathType
-    layer_names: Iterable[str] = field(converter=tuple)
+    layer_names: tuple[str] = field(converter=tuple)
     layer_paths: Iterable[PathType] = field(init=False)
 
-    @layer_names.default  # type: ignore
+    @layer_names.default
     def _(self) -> list[str]:
         return sorted(os.listdir(self.path))
 
-    @layer_paths.default  # type: ignore
+    @layer_paths.default
     def _(self) -> list[PathType]:
         return sorted(d.path for d in os.scandir(self.path))
 

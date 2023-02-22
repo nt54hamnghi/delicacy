@@ -26,7 +26,7 @@ def test_create_fail(cls, element):
 class TestElement(ExtendedElement):
     __test__ = False
 
-    def __init__(self, element: _Element) -> "TestElement":
+    def __init__(self, element: _Element):
         self._element = element
 
     def __attrs_post_init__(self) -> None:
