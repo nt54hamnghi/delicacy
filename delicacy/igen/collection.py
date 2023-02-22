@@ -15,11 +15,11 @@ class Collection:
     layer_names: Iterable[str] = field(converter=tuple)
     layer_paths: Iterable[PathType] = field(init=False)
 
-    @layer_names.default
+    @layer_names.default  # type: ignore
     def _(self) -> list[str]:
         return sorted(os.listdir(self.path))
 
-    @layer_paths.default
+    @layer_paths.default  # type: ignore
     def _(self) -> list[PathType]:
         return sorted(d.path for d in os.scandir(self.path))
 
