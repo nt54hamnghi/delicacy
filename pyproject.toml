@@ -56,10 +56,10 @@ build-backend = "poetry.core.masonry.api"
 
 [poetry.run.script]
 # scripts for developments (mimic package.json)
-coverage = 'coverage run --branch -m pytest && coverage report'
+build = 'poetry build'
+cov = 'coverage run --branch -m pytest && coverage report'
 dev = 'uvicorn delicacy.main:app --reload'
 test = 'pytest'
 test-verbose = 'pytest -vs'
 test-lastfail = 'pytest --lf'
 test-debug = 'pytest -x --pdb'
-build = 'build'
