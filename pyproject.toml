@@ -29,6 +29,9 @@ types-decorator = "^5.1.8.1"
 types-Pillow = "9.2.1"
 
 
+[tool.poetry.group.dev.dependencies]
+coverage = "^7.1.0"
+
 [tool.mypy]
 python_version = "3.10"
 files = "/windows10/Users/hamng/Desktop/projects/delicacy/delicacy/*.py"
@@ -50,3 +53,13 @@ ignore_missing_imports = true
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[poetry.run.script]
+# scripts for developments (mimic package.json)
+coverage = 'coverage run --branch -m pytest && coverage report'
+dev = 'uvicorn delicacy.main:app --reload'
+test = 'pytest'
+test-verbose = 'pytest -vs'
+test-lastfail = 'pytest --lf'
+test-debug = 'pytest -x --pdb'
+build = 'build'
