@@ -1,6 +1,6 @@
 from itertools import count, cycle
 from random import Random
-from typing import Callable, Iterator, TypeAlias
+from typing import Callable, Iterator, TypeAlias, TypeVar
 
 from cytoolz import curry
 
@@ -8,7 +8,9 @@ from delicacy.svglib.colors.hsv import (
     HUE_MAX,
     HUE_RANGE,
     SAT_MAX,
+    SAT_MIN,
     VAL_MAX,
+    VAL_MIN,
     HSVColor,
 )
 from delicacy.svglib.utils.utils import linspace
@@ -20,9 +22,10 @@ from delicacy.svglib.utils.utils import linspace
 ColorIter: TypeAlias = Iterator[HSVColor]
 PaletteFunc: TypeAlias = Callable[..., ColorIter]
 Palettes: list[PaletteFunc] = []
+PT = TypeVar("PT", bound=PaletteFunc)  # Palette Type Variable
 
 
-def palette(func: PaletteFunc) -> PaletteFunc:
+def palette(func: PT) -> PT:
     Palettes.append(func)
     return func
 
@@ -34,15 +37,16 @@ def analogous(
     hue_variance: int = 25,
     sat_variance: int = 25,
 ) -> ColorIter:
+    """Generate an analogous color scheme that consists of adjacent colors on
+    the color wheel but having variant saturations and values
+    """
 
     base_hue = rng.randint(*HUE_RANGE)
     hues = linspace(base_hue - hue_variance, base_hue + hue_variance, num)
 
     base_sat = rng.randint(30, SAT_MAX - sat_variance)
-
     if (high_sat := base_sat + sat_variance) > 100:
         high_sat = SAT_MAX
-
     sats = cycle((base_sat, high_sat))
 
     val = rng.randint(50, VAL_MAX)
@@ -52,6 +56,9 @@ def analogous(
 
 @palette
 def monochromatic(num: int, rng: Random) -> ColorIter:
+    """Generate a monochromatic color scheme that consists of same-hue colors
+    but having variant saturations and values.
+    """
 
     hue = rng.randint(*HUE_RANGE)
     sats = rng.choices(range(SAT_MAX - 10), k=num)
@@ -62,26 +69,42 @@ def monochromatic(num: int, rng: Random) -> ColorIter:
 
 @palette
 def shade(num: int, rng: Random) -> ColorIter:
+    """Generate a shade color scheme that is
+    a mixture of a dominant hue mixed with BLACK (different values)
+    """
 
     hue = rng.randint(*HUE_RANGE)
-    sat = 100
-    vals = linspace(0, 100, num)
+    sat = SAT_MAX
+    vals = linspace(VAL_MIN, VAL_MAX, num)
 
     yield from (HSVColor(hue, sat, val) for val in vals)
 
 
 @palette
 def tint(num: int, rng: Random) -> ColorIter:
+    """Generate a tint color scheme that is
+    a mixture of a dominant hue mixed with WHITE (different saturations)
+    """
 
     hue = rng.randint(*HUE_RANGE)
-    sats = linspace(0, 100, num)
-    val = 100
+    sats = linspace(SAT_MIN, SAT_MAX, num)
+    val = VAL_MAX
 
     yield from (HSVColor(hue, sat, val) for sat in sats)
 
 
 @curry
 def segment(n_segments: int, num: int, rng: Random) -> ColorIter:
+    """A curried segment function that divide the color wheel
+    into segments based on the number provided.
+
+    This is useful for creating:
+
+        complementary (2-segment color scheme)\n
+        triad (3-segment color scheme)\n
+        tetradic/square (4-segment color scheme)
+    """
+
     if not n_segments > 0:
         raise ValueError("segments count must be non-negative")
 
@@ -108,8 +131,6 @@ square = palette(segment(4))
 square.__name__ = "square"
 
 
-# the below function and its curried versions is an implementation of
-# https://www.youtube.com/watch?v=GyVMoejbGFg
 @curry
 def elizabeth(
     sat_range: tuple[int, int],
@@ -117,6 +138,10 @@ def elizabeth(
     num: int,
     rng: Random,
 ) -> ColorIter:
+    """
+    An implementation of https://www.youtube.com/watch?v=GyVMoejbGFg
+    Thanks to Elizabeth
+    """
 
     hues = sorted(rng.choices(range(*HUE_RANGE), k=num))
     sat = rng.choice(range(*sat_range))

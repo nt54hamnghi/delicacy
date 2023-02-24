@@ -36,5 +36,5 @@ class HSVColor(namedtuple("HSVColor", ["hue", "sat", "val"])):
         return rgb
 
     def to_hex(self) -> str:
-        # https://stackoverflow.com/a/3380754
+        # thanks to https://stackoverflow.com/a/3380754
         return "#{0:02x}{1:02x}{2:02x}".format(*self.to_rgb())
