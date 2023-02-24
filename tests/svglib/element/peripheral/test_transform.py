@@ -16,9 +16,9 @@ def test_translate(transform, x, y):
 
     assert isinstance(transform, Transform)
     if y is None:
-        assert transform() == "translate({},{})".format(x, 0)
+        assert transform() == f"translate({x},{0})"
     else:
-        assert transform() == "translate({},{})".format(x, y)
+        assert transform() == f"translate({x},{y})"
 
 
 @pytest.mark.parametrize(
@@ -36,7 +36,7 @@ def test_rotate(transform, angle, x, y):
     if x is None and y is None:
         assert transform() == f"rotate({angle})"
     else:
-        assert transform() == "rotate({},{},{})".format(angle, x, y)
+        assert transform() == f"rotate({angle},{x},{y})"
 
 
 def test_rotate_fail(transform):
@@ -53,9 +53,9 @@ def test_scale(transform, x, y):
 
     assert isinstance(transform, Transform)
     if y is None:
-        assert transform() == "scale({},{})".format(x, x)
+        assert transform() == f"scale({x},{x})"
     else:
-        assert transform() == "scale({},{})".format(x, y)
+        assert transform() == f"scale({x},{y})"
 
 
 def test_skewX(transform):
