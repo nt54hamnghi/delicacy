@@ -1,6 +1,7 @@
 import pytest
 
 from delicacy.svglib.utils.chain import chainable
+from cytoolz.functoolz import identity
 
 
 class Test:
@@ -47,7 +48,7 @@ def test_chainable_result():
 
 def test_disallowed_patching_managed_class():
     # monkey-patch function to the Test class
-    Test.patched = chainable(lambda self: "")
+    Test.patched = chainable(identity)
     with pytest.raises(AttributeError) as err:
         Test().patched()
     assert str(err.value) == "chainable must be used in class definition"
@@ -56,53 +57,47 @@ def test_disallowed_patching_managed_class():
 def test_set_chained_method_fail():
     test = Test()
     with pytest.raises(AttributeError) as err:
-        test.method = lambda _: 0
+        test.method = identity
     assert str(err.value) == "setter not available for chained methods"
 
 
 def test_set_updater_fail():
     test = Test()
     with pytest.raises(AttributeError) as err:
-        test._update = lambda _: 0
+        test._update = identity
     assert str(err.value) == "setter not available for updater methods"
 
 
 def test_mising_updater():
+    # raise error inside __set_name__ will trigger RuntimeError
     with pytest.raises(RuntimeError):
 
-        class AnotherTest:
-            @chainable
-            def another_test(self):
-                ...
+        class _:
+            method = chainable(identity)
 
 
 def test_use_updater_in_non_chainable_class():
+    # raise error inside __set_name__ will trigger RuntimeError
     with pytest.raises(RuntimeError):
 
-        class AnotherTest:
-            @chainable.updater
-            def another_test(self):
-                ...
+        class _:
+            updater_method = chainable.updater(identity)
 
 
-@pytest.mark.parametrize("arg", (None, type(None), 0))
-class TestInitFail:
-    def test__init__chainable_fail(self, arg):
+@pytest.mark.parametrize("argument", (None, type(None), 0))
+class TestInitFailNonCallable:
+    def test__init__chainable_fail(self, argument):
         with pytest.raises(TypeError) as err:
 
-            class Another:
-                attr = chainable(arg)
-
-                @chainable.updater
-                def _update(self):
-                    ...
+            class _:
+                method = chainable(argument)
 
         assert str(err.value) == "target must be callable"
 
-    def test__init__updater_fail(self, arg):
+    def test__init__updater_fail(self, argument):
         with pytest.raises(TypeError) as err:
 
-            class Another:
-                attr = chainable.updater(arg)
+            class _:
+                method = chainable.updater(argument)
 
         assert str(err.value) == "target must be callable"
