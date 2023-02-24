@@ -6,7 +6,9 @@ from delicacy.igen.igen import ImageGenerator
 from delicacy.svglib.utils.utils import materialize, wand2pil
 
 
-def combine(foreground: PILImage.Image, background: WandImage.Image) -> PILImage.Image:
+def combine(
+    foreground: PILImage.Image, background: WandImage.Image
+) -> PILImage.Image:
     img = wand2pil(background)
     img.paste(foreground, (0, 0), foreground)
     return img

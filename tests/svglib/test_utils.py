@@ -1,7 +1,16 @@
 import pytest
+from lxml import etree
 from lxml.etree import _Element
+from PIL import Image as PILImage
+from wand import image as WandImage
 
-from delicacy.svglib.utils.utils import get_canvas, linspace
+from delicacy.svglib.utils.utils import (
+    eprint,
+    get_canvas,
+    linspace,
+    materialize,
+    wand2pil,
+)
 
 STANDARD_CANVAS = {
     "width": "512",
@@ -10,21 +19,25 @@ STANDARD_CANVAS = {
 }
 
 
+def test_get_canvas_empty():
+    canvas = get_canvas()
+
+    assert isinstance(canvas, _Element)
+    assert canvas.attrib == STANDARD_CANVAS
+
+
 @pytest.mark.parametrize(
     ("size", "kwds"),
     (
-        (tuple(), {}),
         (("1024", "1024"), {}),
         (("1024", "1024"), dict(background_color="black")),
     ),
-    ids=["default", "empty-keywords", "with-keywords"],
+    ids=["no-keywords", "with-keywords"],
 )
 def test_get_canvas(size, kwds):
+    width, height = size
     canvas = get_canvas(*size, **kwds)
-    expected = STANDARD_CANVAS | kwds
-    if size:
-        expected["width"] = size[0]
-        expected["height"] = size[1]
+    expected = STANDARD_CANVAS | dict(width=width, height=height, **kwds)
 
     assert isinstance(canvas, _Element)
     assert canvas.attrib == expected
@@ -60,5 +73,38 @@ def test_linspace_fail_start_stop(start, stop):
     ),
 )
 def test_linspace(args, expected):
-    result = tuple(round(i, 3) for i in linspace(*args))
+    result = tuple(linspace(*args))
     assert result == expected
+
+
+# use capsys fixture to capture standard output and error
+def test_eprint(capsys):
+    root = etree.Element("root")
+    etree.SubElement(root, "child1")
+    etree.SubElement(root, "child2")
+
+    eprint(root, end="")
+    [output, _] = capsys.readouterr()
+
+    expected = etree.tostring(root, pretty_print=True)
+
+    assert output.encode("utf8") == expected
+
+
+def test_materialize():
+    canvas = get_canvas()
+    img = materialize(canvas)
+
+    assert isinstance(img, WandImage.Image)
+    assert img.width == int(STANDARD_CANVAS["width"])
+    assert img.height == int(STANDARD_CANVAS["height"])
+
+
+def test_wand2pil():
+    canvas = get_canvas()
+    wand_img = materialize(canvas)
+    pil_img = wand2pil(wand_img)
+
+    assert isinstance(pil_img, PILImage.Image)
+    assert pil_img.width == int(STANDARD_CANVAS["width"])
+    assert pil_img.height == int(STANDARD_CANVAS["height"])

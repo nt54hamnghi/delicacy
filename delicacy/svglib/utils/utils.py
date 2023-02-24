@@ -6,18 +6,13 @@ from typing import NamedTuple
 from cytoolz.itertoolz import take
 from lxml import etree
 from lxml.etree import Element, _Element, tostring
-from PIL import Image as PilImg
-from wand.image import Image as WandImg
+from PIL import Image as PILImange
+from wand import image as WandImage
 
 
 class Size(NamedTuple):
     width: float
     height: float
-
-
-def eprint(element: _Element) -> None:
-    msg = etree.tostring(element, pretty_print=True).decode("utf8")
-    print(msg)
 
 
 def get_canvas(
@@ -42,16 +37,23 @@ def linspace(start: float, stop: float, n_samples: int) -> Iterator[float]:
         return iter(())
 
     step = (stop - start) / (n_samples - 1)
-    space = (round(i, 3) for i in count(start, step))
+    space = take(n_samples, count(start, step))
 
-    return take(n_samples, space)
+    return (round(i, 3) for i in space)
 
 
-def materialize(canvas: _Element, background: str = "#162447") -> WandImg:
+def eprint(element: _Element, **kwds) -> None:
+    msg = etree.tostring(element, pretty_print=True).decode("utf8")
+    print(msg, **kwds)
+
+
+def materialize(
+    canvas: _Element, background: str = "#162447"
+) -> WandImage.Image:
     blob = tostring(canvas)
-    return WandImg(blob=blob, format="svg", background=background)
+    return WandImage.Image(blob=blob, format="svg", background=background)
 
 
-def wand2pil(wand_image: WandImg) -> PilImg.Image:
+def wand2pil(wand_image: WandImage.Image) -> PILImange.Image:
     bytesio = BytesIO(wand_image.make_blob("png"))
-    return PilImg.open(bytesio)
+    return PILImange.open(bytesio)
