@@ -1,30 +1,38 @@
-from typing import ClassVar
+from abc import ABC
+from typing import Iterator
 
 from attrs import field, frozen
 from attrs.validators import and_, ge, in_, le
 
 
-class Style:
-    __slots__ = ()
-    _main_property: ClassVar[str] = ""
+class Style(ABC):
+    __slots__: tuple[str] = tuple()  # type: ignore
+
+    @staticmethod
+    def get_prop_name(style: str, prop: str) -> str:
+        return style if prop == "color" else f"{style}-{prop}"
+
+    @property
+    def style(self) -> str:
+        return self.__class__.__name__.lower()
+
+    @property
+    def props(self) -> Iterator[str]:
+        style = self.style
+        return (self.get_prop_name(style, prop) for prop in self.__slots__)
 
     def __str__(self) -> str:
-        name = self.__class__.__name__.lower()
-        prop = self._main_property
-        keyfunc = lambda k: name if k == prop else f"{name}-{k}"  # noqa
-
-        keys: tuple = self.__slots__
-        vals = (getattr(self, key) for key in keys)
-
-        return " ".join(
-            f"{keyfunc(k)}: {v};" for k, v in zip(keys, vals) if v is not None
+        values = tuple(getattr(self, attr) for attr in self.__slots__)
+        output = (
+            f"{prop}: {value};"
+            for prop, value in zip(self.props, values)
+            if value is not None
         )
+        return " ".join(output)
 
 
 @frozen
 class Stroke(Style):
-    _main_property: ClassVar[str] = "color"
-
     color: str = "black"
     opacity: float = field(default=1, validator=and_(ge(0), le(1)))
     width: float = 1
@@ -32,27 +40,12 @@ class Stroke(Style):
         default=None,
         validator=in_(("butt", "square", "round", None)),
     )
-    linejoin: str | None = field(
-        default=None,
-        validator=in_(("miter", "round", "bevel", None)),
-    )
-    miterlimit: float | None = field(default=None)
-
-    @miterlimit.validator
-    def _check_if_miter(self, attr, val: float | None) -> None:
-        if val is not None:
-            if self.linejoin != "miter":
-                raise ValueError(
-                    "miterlimit can only be set if linejoin is 'miter'"
-                )
 
 
 @frozen
 class Fill(Style):
-    _main_property: ClassVar[str] = "color"
-
     color: str = "black"
     opacity: float = field(default=1, validator=and_(ge(0), le(1)))
     rule: str | None = field(
-        default=None, validator=in_(("nonzero", "evenodd", None))
+        default=None, validator=(in_(("nonzero", "evenodd", None)))
     )
