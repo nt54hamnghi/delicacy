@@ -18,7 +18,7 @@ def element():
 
 
 @pytest.mark.parametrize("cls", (SVGElement, ExtendedElement))
-def test_create_fail(cls, element):
+def test_init_not_accept_agrument(cls, element):
     with pytest.raises(TypeError):
         cls(element)
 
@@ -29,7 +29,7 @@ class TestElement(ExtendedElement):
     def __init__(self, element: _Element):
         self._element = element
 
-    def __attrs_post_init__(self) -> None:
+    def __attrs_post_init__(self) -> None:  # pragma: no cover
         ...
 
 

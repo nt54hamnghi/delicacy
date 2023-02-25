@@ -12,13 +12,13 @@ class Style(ABC):
     def get_prop_name(style: str, prop: str) -> str:
         return style if prop == "color" else f"{style}-{prop}"
 
-    @property
-    def style(self) -> str:
-        return self.__class__.__name__.lower()
+    @classmethod
+    def name(cls) -> str:
+        return cls.__name__.lower()
 
     @property
     def props(self) -> Iterator[str]:
-        style = self.style
+        style = self.name()
         return (self.get_prop_name(style, prop) for prop in self.__slots__)
 
     def __str__(self) -> str:
