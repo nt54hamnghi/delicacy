@@ -41,8 +41,9 @@ class SVGElement(ABC):
         return self._element.get(attr)
 
 
-@define
 class ExtendedElement(SVGElement):
+    __slots__ = ()
+
     @property
     def style(self) -> dict[str, str]:
         style_str: str | None = self.get("style")
@@ -76,15 +77,16 @@ class ExtendedElement(SVGElement):
         super().set("transform", value)
 
 
-@define
 class WrappingElement(ExtendedElement):
-    def __init__(self, tag, **kwds: Any) -> None:
+    __slots__ = ()
+
+    def __init__(self, tag: str, **kwds: str) -> None:
         self._element = Element(tag, attrib=kwds)
 
     def __attrs_post_init__(self) -> None:  # pragma: no cover
         ...
 
-    def __call__(self, *childs: SVGElement, **kwds: Any):
+    def __call__(self, *childs: SVGElement, **kwds: str):
         for k, v in kwds.items():
             self._element.set(k, v)
         self._element.extend(child.base for child in childs)

@@ -1,14 +1,15 @@
 from itertools import chain
 from typing import Iterator
+from attrs import define
 
 from lxml.etree import Element
 
-from delicacy.svglib.elements.element import ExtendedElement, svg_define
+from delicacy.svglib.elements.element import ExtendedElement
 from delicacy.svglib.elements.peripheral.point import Point
 from delicacy.svglib.utils.utils import Size
 
 
-@svg_define
+@define
 class Use(ExtendedElement):
     href: str
     location: Point = Point(0, 0)

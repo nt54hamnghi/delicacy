@@ -2,15 +2,15 @@ from collections.abc import Sequence
 from itertools import chain
 from typing import TypeVar
 
-from attrs import field
+from attrs import field, define
 from attrs.validators import in_
 from lxml.etree import Element, SubElement
 
-from delicacy.svglib.elements.element import SVGElement, svg_define
+from delicacy.svglib.elements.element import SVGElement
 from delicacy.svglib.utils.utils import linspace
 
 
-@svg_define
+@define
 class BaseGradient(SVGElement):
     id: str
     spreadMethod: str = field(
@@ -34,7 +34,7 @@ class BaseGradient(SVGElement):
         SubElement(self.base, "stop", attrib=attributes)
 
 
-@svg_define
+@define
 class LinearGradient(BaseGradient):
     id: str = "linearGradient"
     start: tuple[float, float] = field(default=(0, 0))
@@ -51,7 +51,7 @@ class LinearGradient(BaseGradient):
         self._element = Element("linearGradient", attrib=attrib)
 
 
-@svg_define
+@define
 class RadialGradient(BaseGradient):
     id: str = "radialGradient"
     radius: float = 0.55
