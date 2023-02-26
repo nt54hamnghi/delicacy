@@ -1,18 +1,19 @@
-import pytest
-
 from delicacy.svglib.elements.use import Use
 
 
-@pytest.mark.parametrize(
-    "size", ((10, 10), None), ids=["argument", "default"]
-)
-def test_use(size):
-    use = Use("use", size=size)
+def test_use_default():
+    use = Use("use")
 
     expected = dict(href="#use", x="0", y="0")
-    if size is not None:
-        width, height = size
-        expected.update(width=str(width), height=str(height))
 
     assert use.base.tag == "use"
     assert use.base.attrib == expected
+
+
+def test_use_with_size():
+    use = Use("use", size=(10, 10))
+
+    expected = dict(href="#use", x="0", y="0")
+
+    assert use.base.tag == "use"
+    assert use.base.attrib == expected | dict(width="10", height="10")

@@ -20,10 +20,10 @@ class Use(ExtendedElement):
         self.href = "#" + self.href
 
         tags = "href x y".split()
-        values: Iterator[str] = (str(v) for v in (self.href, *self.location))
+        vals: Iterator[str] = map(str, (self.href, *self.location))
 
         if self.size is not None:
             tags += ["width", "height"]
-            values = chain(values, (str(i) for i in self.size))
+            vals = chain(vals, map(str, self.size))
 
-        self._element = Element("use", attrib=dict(zip(tags, values)))
+        self._element = Element("use", attrib=dict(zip(tags, vals)))
