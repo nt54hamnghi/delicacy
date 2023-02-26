@@ -19,19 +19,41 @@ robot_gen = ImageGenerator(robot_collection)
 
 
 # workaround to dynamically create a StrEnum from a dictionary's keys
-MakerNames = tuple(MakerDict.keys())
-MakerEnum = Enum("MakerEnum", dict(zip(MakerNames, MakerNames)))  # type: ignore
+# as long as a function is decorated with @maker,
+# it's automatically added to the MakerDict, thus is also included in MakerEnum
+MakerEnum = Enum("MakerEnum", {k: k for k in MakerDict.keys()})  # type: ignore
+
+
+class ThemeEnum(str, Enum):
+    Dark = "dark"
+    Light = "light"
+
+
+def get_theme(theme: ThemeEnum):
+    match theme:
+        case ThemeEnum.Dark:
+            return "#09132b"
+        case ThemeEnum.Light:
+            return "#ced5e5"
+        case _:
+            raise ValueError("Invalid theme")
 
 
 @app.get("/make/{maker_type}")
-async def make(maker_type: MakerEnum, phrase: str = Query(max_length=32)):
+async def make(
+    maker_type: MakerEnum,
+    phrase: str = Query(max_length=32),
+    theme: ThemeEnum = ThemeEnum.Dark,
+):
 
     try:
         maker = MakerDict[maker_type.name]
     except KeyError:
-        raise ValueError("invalid maker_typeType")
+        raise ValueError("Invalid maker type")
 
-    img = generate(phrase, maker, robot_gen)
+    img = generate(
+        phrase, maker, robot_gen, background_color=get_theme(theme)
+    )
 
     with BytesIO() as imgbytes:
         img.save(imgbytes, "png")
