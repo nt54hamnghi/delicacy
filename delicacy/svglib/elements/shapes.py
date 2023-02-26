@@ -2,9 +2,9 @@ from collections.abc import Callable, Iterable
 from itertools import chain
 from math import radians, tan
 
+from attrs import define
 from decorator import decorator
 from lxml.etree import Element
-from attrs import define
 
 from delicacy.svglib.elements.element import ExtendedElement
 from delicacy.svglib.elements.peripheral.point import Point

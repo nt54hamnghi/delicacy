@@ -1,7 +1,7 @@
 from itertools import chain
 from typing import Iterator
-from attrs import define
 
+from attrs import define
 from lxml.etree import Element
 
 from delicacy.svglib.elements.element import ExtendedElement

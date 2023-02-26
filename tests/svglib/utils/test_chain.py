@@ -1,7 +1,7 @@
 import pytest
+from cytoolz.functoolz import identity
 
 from delicacy.svglib.utils.chain import chainable
-from cytoolz.functoolz import identity
 
 
 class Test:

@@ -1,5 +1,5 @@
-import os
 import hashlib
+import os
 from itertools import product
 from random import choices
 from string import ascii_letters, digits, punctuation

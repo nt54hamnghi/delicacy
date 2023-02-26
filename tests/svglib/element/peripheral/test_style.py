@@ -1,4 +1,5 @@
 from itertools import product
+
 import pytest
 
 from delicacy.svglib.elements.peripheral.style import Fill, Stroke, Style
