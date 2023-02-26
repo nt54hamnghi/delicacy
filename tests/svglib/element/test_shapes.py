@@ -84,7 +84,7 @@ def test_building_path():
 
     expected = f"M{x},{y} L{x},{y} Q{w},{z} {x},{y} C{w},{z} {w+1},{z+1} {x},{y} A{rx},{ry} 0 1,1 {x},{y} Z"  # noqa
 
-    assert path.get("d") == expected
+    assert path.d == expected
 
 
 def test_building_path_relative():
@@ -104,7 +104,7 @@ def test_building_path_relative():
 
     expected = f"m{x},{y} l{x},{y} q{w},{z} {x},{y} c{w},{z} {w+1},{z+1} {x},{y} a{rx},{ry} 0 1,1 {x},{y} z"  # noqa
 
-    assert path.get("d") == expected
+    assert path.d == expected
 
 
 def test_building_path_mixed():

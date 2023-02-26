@@ -20,7 +20,7 @@ class Circle(ExtendedElement):
 
     def __attrs_post_init__(self) -> None:
         tags = ("cx", "cy", "r")
-        vals = (str(v) for v in chain(self.center, (self.radius,)))
+        vals = map(str, (*self.center, self.radius))
         self._element = Element("circle", attrib=dict(zip(tags, vals)))
 
     @classmethod
@@ -36,7 +36,7 @@ class Line(ExtendedElement):
 
     def __attrs_post_init__(self) -> None:
         tags = ("x1", "y1", "x2", "y2")
-        vals = (str(v) for v in chain(self.start, self.stop))
+        vals = map(str, chain(self.start, self.stop))
         self._element = Element("line", attrib=dict(zip(tags, vals)))
 
     @classmethod
@@ -45,7 +45,7 @@ class Line(ExtendedElement):
 
 
 @decorator
-def _make_relative(func: Callable[..., str], *args, **kwds):
+def relative(func: Callable[..., str], *args, **kwds):
     result = func(*args, **kwds)
     return result.lower()
 
@@ -55,30 +55,32 @@ class Path(ExtendedElement):
     def __attrs_post_init__(self) -> None:
         self._element = Element("path", d="")  # type: ignore
 
+    @property
+    def d(self):
+        """SVG Path defines path operations inside an attribute named `d`"""
+        return self.get("d") or ""
+
     @chainable.updater
     def _update(self, value: str) -> None:
-        ops = self._element.get("d")
-        if ops is None:
-            raise NotImplementedError
-        self._element.set("d", (ops + value).lstrip())
+        self._element.set("d", (self.d + value).lstrip())
 
     @chainable
     def M(self, x: float, y: float) -> str:
         return f" M{x},{y}"
 
-    m = chainable(_make_relative(M.target))
+    m = chainable(relative(M.target))
 
     @chainable
     def L(self, x: float, y: float) -> str:
         return f" L{x},{y}"
 
-    l = chainable(_make_relative(L.target))  # noqa
+    l = chainable(relative(L.target))  # noqa
 
     @chainable
     def Q(self, x1: float, y1: float, x: float, y: float) -> str:
         return f" Q{x1},{y1} {x},{y}"
 
-    q = chainable(_make_relative(Q.target))
+    q = chainable(relative(Q.target))
 
     @chainable
     def C(
@@ -86,7 +88,7 @@ class Path(ExtendedElement):
     ) -> str:
         return f" C{x1},{y1} {x2},{y2} {x},{y}"
 
-    c = chainable(_make_relative(C.target))
+    c = chainable(relative(C.target))
 
     @chainable
     def A(
@@ -103,13 +105,13 @@ class Path(ExtendedElement):
             f" A{rx},{ry} {x_rotation} {large_arc_flag},{sweep_flag} {x},{y}"
         )
 
-    a = chainable(_make_relative(A.target))
+    a = chainable(relative(A.target))
 
     @chainable
     def Z(self) -> str:
         return " Z"
 
-    z = chainable(_make_relative(Z.target))
+    z = chainable(relative(Z.target))
 
 
 @define
@@ -130,10 +132,7 @@ class Rectangle(ExtendedElement):
 
     def __attrs_post_init__(self) -> None:
         tags = ("x", "y", "width", "height", "rx", "ry")
-        vals = (
-            str(v)
-            for v in chain(self.location, self.size, self.corner_radius)
-        )
+        vals = map(str, chain(self.location, self.size, self.corner_radius))
         self._element = Element("rect", attrib=dict(zip(tags, vals)))
 
     @classmethod
