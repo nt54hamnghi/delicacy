@@ -15,12 +15,16 @@ def combine(
 
 
 def make_background(
-    phrase: str, maker: MakerFunc, width: float = 320, height: float = 320
+    phrase: str,
+    maker: MakerFunc,
+    width: float = 320,
+    height: float = 320,
+    background: str | None = None,
 ) -> PILImage.Image:
     bgmaker = BackgroundMaker.from_phrase(phrase, maker)
 
     canvas = bgmaker.generate(width, height)
-    return materialize(canvas)
+    return materialize(canvas, background)
 
 
 def generate(
@@ -29,7 +33,10 @@ def generate(
     gen: ImageGenerator,
     width: float = 320,
     height: float = 320,
+    background_color: str = "#09132b",
 ) -> PILImage.Image:
     character = gen.generate(phrase, size=(width, height))
-    background = make_background(phrase, maker, width, height)
+    background = make_background(
+        phrase, maker, width, height, background_color
+    )
     return combine(character, background)

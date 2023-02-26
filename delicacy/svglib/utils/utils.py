@@ -48,7 +48,7 @@ def eprint(element: _Element, **kwds) -> None:
 
 
 def materialize(
-    canvas: _Element, background: str = "#162447"
+    canvas: _Element, background: str | None = None
 ) -> WandImage.Image:
     blob = tostring(canvas)
     return WandImage.Image(blob=blob, format="svg", background=background)
