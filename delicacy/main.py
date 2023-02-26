@@ -5,7 +5,7 @@ from fastapi import FastAPI, Query
 from fastapi.responses import Response
 
 from delicacy.config import COLLECTION_DIR
-from delicacy.excite.excite import ExAid, Genm, ParaDX
+from delicacy.excite.excite import MakerDict
 from delicacy.generate import generate
 from delicacy.igen.collection import Collection
 from delicacy.igen.igen import ImageGenerator
@@ -18,24 +18,18 @@ robot_collection = Collection("Robot", robot_path)
 robot_gen = ImageGenerator(robot_collection)
 
 
-class MakerType(str, Enum):
-    exaid = "exaid"
-    genm = "genm"
-    paradx = "paradx"
+# workaround to dynamically create a StrEnum from a dictionary's keys
+MakerNames = tuple(MakerDict.keys())
+MakerEnum = Enum("MakerEnum", dict(zip(MakerNames, MakerNames)))  # type: ignore
 
 
 @app.get("/make/{maker_type}")
-async def make(maker_type: MakerType, phrase: str = Query(max_length=32)):
+async def make(maker_type: MakerEnum, phrase: str = Query(max_length=32)):
 
-    match maker_type:
-        case maker_type.exaid:
-            maker = ExAid
-        case maker_type.genm:
-            maker = Genm
-        case maker_type.paradx:
-            maker = ParaDX
-        case _:
-            raise ValueError("invalid maker_typeType")
+    try:
+        maker = MakerDict[maker_type.name]
+    except KeyError:
+        raise ValueError("invalid maker_typeType")
 
     img = generate(phrase, maker, robot_gen)
 

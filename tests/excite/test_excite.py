@@ -1,11 +1,11 @@
 import pytest
 from lxml.etree import tostring
 
-from delicacy.excite.excite import BackgroundMaker, makers
+from delicacy.excite.excite import BackgroundMaker, MakerDict
 from delicacy.svglib.utils.utils import materialize
 
 
-@pytest.mark.parametrize("maker", makers)
+@pytest.mark.parametrize("maker", MakerDict.values())
 class TestBGMakerReproducibility:
     def test_bgmaker(self, maker):
         seed = 0

@@ -2,7 +2,7 @@ from collections.abc import Sequence
 from hashlib import sha3_512
 from itertools import product
 from random import Random
-from typing import Callable, TypeAlias
+from typing import Callable, TypeAlias, TypeVar
 
 from bitstring import BitArray
 from cytoolz.itertoolz import partition
@@ -29,13 +29,13 @@ from delicacy.svglib.utils.utils import get_canvas, linspace
 
 Canvas: TypeAlias = _Element
 MakerFunc: TypeAlias = Callable[..., Canvas]
+MakerDict: dict[str, MakerFunc] = dict()
+MT = TypeVar("MT", bound=MakerFunc)
 
 
-makers: list[MakerFunc] = []
-
-
-def maker(func: MakerFunc) -> MakerFunc:
-    makers.append(func)
+def maker(func: MT) -> MT:
+    key = func.__name__.lower()
+    MakerDict[key] = func
     return func
 
 
@@ -155,7 +155,7 @@ class BackgroundMaker:
         palette: PaletteFunc | None = None,
         seed: int | None = None,
     ) -> None:
-        if maker not in makers:
+        if maker not in MakerDict.values():
             raise ValueError("not a valid maker function")
         self.maker = maker
         self.rng = Random(seed)
