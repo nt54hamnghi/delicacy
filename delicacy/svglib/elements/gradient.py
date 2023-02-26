@@ -25,13 +25,13 @@ class BaseGradient(SVGElement):
         if not 0 <= opacity <= 1:
             raise ValueError(f"opacity: {opacity} not in range: [0, 1]")
 
-        attributes = {
+        attrib = {
             "offset": f"{offset:.0%}",
             "stop-color": color,
             "stop-opacity": str(float(opacity)),
         }
 
-        SubElement(self.base, "stop", attrib=attributes)
+        SubElement(self.base, "stop", attrib=attrib)
 
 
 @define
@@ -45,7 +45,7 @@ class LinearGradient(BaseGradient):
         start = (f"{i:.0%}" for i in self.start)
         stop = (f"{i:.0%}" for i in self.stop)
 
-        attrib = dict(zip(tags, chain(start, stop)))
+        attrib = dict(zip(tags, chain(start, stop), strict=True))
         attrib.update(id=self.id, spreadMethod=self.spreadMethod)
 
         self._element = Element("linearGradient", attrib=attrib)
@@ -63,7 +63,7 @@ class RadialGradient(BaseGradient):
         center = (f"{i:.0%}" for i in self.center)
         focus = (f"{i:.0%}" for i in self.focus)
 
-        attrib = dict(zip(tags, chain(center, focus)))
+        attrib = dict(zip(tags, chain(center, focus), strict=True))
         attrib.update(
             id=self.id, r=f"{self.radius:.0%}", spreadMethod=self.spreadMethod
         )

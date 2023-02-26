@@ -9,7 +9,7 @@ from delicacy.svglib.elements.gradient import (
 from delicacy.svglib.utils.utils import linspace
 
 
-def test_create_base_gradient():
+def test_create_base_gradient_fail():
     with pytest.raises(TypeError):
         BaseGradient("base", "pad")
 
@@ -17,9 +17,9 @@ def test_create_base_gradient():
 @pytest.mark.parametrize(
     "id x1 y1 x2 y2 spreadMethod".split(),
     (
-        ("linear", 0, 0, 1, 1, "pad"),
-        ("mylinear", 1, 1, 0, 0, "repeat"),
-        ("yourlinear", 1, 0, 1, 0, "reflect"),
+        ("pad-linear", 0, 0, 1, 1, "pad"),
+        ("repeat-linear", 1, 1, 0, 0, "repeat"),
+        ("reflect-linear", 1, 0, 1, 0, "reflect"),
     ),
 )
 def test_create_linear_gradient(id, x1, y1, x2, y2, spreadMethod):
@@ -40,9 +40,9 @@ def test_create_linear_gradient(id, x1, y1, x2, y2, spreadMethod):
 @pytest.mark.parametrize(
     "id r cx cy fx fy spreadMethod".split(),
     (
-        ("radial", 0.33, 0, 0, 0, 0, "pad"),
-        ("myradial", 0.66, 1, 2, 3, 4, "repeat"),
-        ("yourradial", 1, 50, 50, 100, 100, "reflect"),
+        ("pad-radial", 0.33, 0, 0, 0, 0, "pad"),
+        ("repeat-radial", 0.66, 1, 2, 3, 4, "repeat"),
+        ("reflect-radial", 1, 50, 50, 100, 100, "reflect"),
     ),
 )
 def test_create_radial_gradient(id, r, cx, cy, fx, fy, spreadMethod):
