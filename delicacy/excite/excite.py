@@ -156,12 +156,11 @@ class BackgroundMaker:
         seed: int | None = None,
     ) -> None:
         if maker not in MakerDict.values():
-            raise ValueError("not a valid maker function")
+            raise ValueError("Not a valid maker function")
         self.maker = maker
         self.rng = Random(seed)
 
-        if palette is None:
-            palette = self.rng.choice(PREFERRED_PALETTES)
+        palette = palette or self.rng.choice(PREFERRED_PALETTES)
         self.palette_gen = PaletteGenerator(palette, seed)
 
     def generate(
@@ -171,9 +170,9 @@ class BackgroundMaker:
         return self.maker(width, height, colors, self.rng)
 
     @classmethod
-    def from_phrase(cls, phrase: str, maker: MakerFunc) -> "BackgroundMaker":
+    def from_phrase(cls, phrase: str, maker: MakerFunc):
         if len(phrase) > 32:
-            raise ValueError("phrase length must be less than 32")
+            raise ValueError("Phrase length must be less than 32")
 
         hex = sha3_512(phrase.encode()).hexdigest()
         seed = BitArray(hex=hex).uint

@@ -1,4 +1,5 @@
 import pytest
+from cytoolz.functoolz import identity
 from lxml.etree import tostring
 
 from delicacy.excite.excite import BackgroundMaker, MakerDict
@@ -7,35 +8,34 @@ from delicacy.svglib.utils.utils import materialize
 
 @pytest.mark.parametrize("maker", MakerDict.values())
 class TestBGMakerReproducibility:
-    def test_bgmaker(self, maker):
-        seed = 0
+    @pytest.mark.parametrize("seed", range(2))
+    def test_bgmaker(self, maker, seed):
 
-        bg_maker0 = BackgroundMaker(maker, seed=seed)
-        bg0 = bg_maker0.generate()
+        first_bg = BackgroundMaker(maker, seed=seed).generate()
+        second_bg = BackgroundMaker(maker, seed=seed).generate()
 
-        bg_maker1 = BackgroundMaker(maker, seed=seed)
-        bg1 = bg_maker1.generate()
+        assert tostring(first_bg) == tostring(second_bg)
+        assert materialize(first_bg) == materialize(second_bg)
 
-        assert tostring(bg0) == tostring(bg1)
-        assert materialize(bg0) == materialize(bg1)
+    @pytest.mark.parametrize("phrase", ("random", "hash"))
+    def test_bgmaker_from_phrase(self, maker, phrase):
 
-    def test_bgmaker_from_phrase(self, maker):
-        phrase = ""
+        first_bg = BackgroundMaker.from_phrase(phrase, maker).generate()
+        second_bg = BackgroundMaker.from_phrase(phrase, maker).generate()
 
-        bg_maker0 = BackgroundMaker.from_phrase(phrase, maker)
-        bg0 = bg_maker0.generate()
-
-        bg_maker1 = BackgroundMaker.from_phrase(phrase, maker)
-        bg1 = bg_maker1.generate()
-
-        assert tostring(bg0) == tostring(bg1)
-        assert materialize(bg0) == materialize(bg1)
+        assert tostring(first_bg) == tostring(second_bg)
+        assert materialize(first_bg) == materialize(second_bg)
 
     def test_bgmaker_from_phrase_fail(self, maker):
         with pytest.raises(ValueError):
             BackgroundMaker.from_phrase("*" * 33, maker)
 
 
-def test_bgmaker_fail():
+def test_bgmaker_create_fail():
     with pytest.raises(ValueError):
-        BackgroundMaker(lambda _: ...)
+        BackgroundMaker(identity)
+
+
+def test_bgmaker_from_phrase_fail():
+    with pytest.raises(ValueError):
+        BackgroundMaker.from_phrase("random", identity)

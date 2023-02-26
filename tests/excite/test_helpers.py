@@ -4,6 +4,7 @@ from random import Random
 from unittest import mock
 
 import pytest
+from delicacy.excite.excite import GENM_OPTIONS
 
 from delicacy.excite.helpers import (
     fade,
@@ -15,6 +16,7 @@ from delicacy.excite.helpers import (
 )
 from delicacy.svglib.elements.peripheral.transform import Transform
 from delicacy.svglib.elements.shapes import Circle, Path, Rectangle
+from delicacy.svglib.utils.utils import linspace
 
 
 @pytest.mark.parametrize(
@@ -31,7 +33,7 @@ def test_sorted_randspace(seed, start, stop, k):
     assert set(s1).issubset(set(range(start, stop + 1)))
 
 
-@pytest.mark.parametrize("option", "rec tri cir xsh".split())
+@pytest.mark.parametrize("option", GENM_OPTIONS)
 def test_make_elm(option):
     elm = make_elm(option=option)
     if option == "rec":
@@ -42,53 +44,46 @@ def test_make_elm(option):
         assert isinstance(elm, Path)
 
 
-def test_make_elm_fail():
+@pytest.mark.parametrize("non_option", map(str.upper, GENM_OPTIONS))
+def test_make_elm_fail(non_option):
     with pytest.raises(ValueError):
-        make_elm(option="")
+        make_elm(option=non_option)
 
 
 @pytest.mark.parametrize(
-    ("k", "_range"),
-    tuple(
-        product(
-            (10, 20),
-            product(
-                map(lambda x: pow(2, x), range(2)),
-                map(lambda x: pow(2, x), range(8, 10)),
-            ),
-        )
+    ("x", "y", "range"),
+    (
+        (10, 20, (1, 256)),
+        (20, 10, (2, 512)),
     ),
 )
 class TestPlane:
-    def test_linear_plane(self, k, _range):
-        plane = linear_plane(_range, _range, k, k * 2)
-        plane = tuple(plane)
+    def test_linear_plane(self, x, y, range):
+        plane = tuple(linear_plane(range, range, x, y))
 
-        assert len(plane) == k * k * 2
-
-    @pytest.mark.parametrize("random_returned", (0, 1))
-    @mock.patch("delicacy.excite.helpers.Random")
-    def test_rand_plane(self, mock_rng, k, _range, random_returned):
-        mock_rng.random.return_value = random_returned
-        plane = rand_plane(mock_rng, _range, _range, k, k * 2, 0.5)
-        plane = tuple(plane)
-
-        expected = k * k * 2
-
-        if random_returned == 0:
-            expected *= 1
-        elif random_returned == 1:
-            expected *= 0
-
-        assert len(plane) == expected
+        assert len(plane) == x * y
 
     @pytest.mark.parametrize("rate", (0.25, 0.75, 1))
-    def test_rand_plane_reproducible(self, k, _range, rate):
+    def test_rand_plane_reproducible(self, x, y, range, rate):
         seed = int(rate * 100)
-        plane0 = rand_plane(Random(seed), _range, _range, k, k * 2, rate)
-        plane1 = rand_plane(Random(seed), _range, _range, k, k * 2, rate)
+        args = (range, range, x, y, rate)
 
-        assert all(p0 == p1 for p0, p1 in zip(plane0, plane1))
+        first = rand_plane(Random(seed), *args)
+        second = rand_plane(Random(seed), *args)
+
+        assert all(f == s for f, s in zip(first, second))
+
+    @pytest.mark.parametrize(
+        ("random", "rate"), product((0, 0.5, 1), linspace(0.1, 1, 5))
+    )
+    @mock.patch("delicacy.excite.helpers.Random")
+    def test_rand_plane(self, mock_rng, x, y, range, random, rate):
+        mock_rng.random.return_value = random
+
+        plane = tuple(rand_plane(mock_rng, range, range, x, y, rate))
+        expected = x * y if random < rate else 0
+
+        assert len(plane) == expected
 
 
 @pytest.mark.parametrize("rate", (-1, 0, 1.1))
@@ -99,25 +94,23 @@ def test_rand_plane_fail(rate):
 
 @pytest.mark.parametrize(
     ("k", "spread"),
-    tuple(
-        product(
-            range(2, 4),
-            ((5, 20), (10, 20), (15, 20)),
-        ),
+    (
+        (2, (5, 20)),
+        (4, (10, 20)),
+        (6, (15, 20)),
     ),
 )
 class TestSpreadIt:
     @pytest.mark.parametrize(
         "direction",
-        tuple(product((-1, 1), repeat=2)),
+        product((-1, 1), repeat=2),
     )
     @mock.patch("delicacy.excite.helpers.Random")
     def test_spread_it(self, mock_rng, k, spread, direction):
         mock_rng.choices.side_effect = [direction] + list(
             repeat(spread, times=k)
         )
-        spr = spreadit(mock_rng, spread, k)
-        spr = tuple(spr)
+        spr = tuple(spreadit(mock_rng, spread, k))
 
         assert len(spr) == k
 
@@ -130,10 +123,10 @@ class TestSpreadIt:
 
     @pytest.mark.parametrize("seed", range(3))
     def test_spread_it_reproducible(self, spread, k, seed):
-        spr0 = spreadit(Random(seed), spread, k)
-        spr1 = spreadit(Random(seed), spread, k)
+        first = spreadit(Random(seed), spread, k)
+        second = spreadit(Random(seed), spread, k)
 
-        assert all(s0 == s1 for s0, s1 in zip(spr0, spr1))
+        assert all(f == s for f, s in zip(first, second))
 
 
 @pytest.mark.parametrize(
