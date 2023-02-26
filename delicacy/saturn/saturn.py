@@ -8,7 +8,7 @@ from bitstring import BitArray
 from cytoolz.itertoolz import partition
 from lxml.etree import _Element
 
-from delicacy.excite.helpers import (
+from delicacy.saturn.helpers import (
     fade,
     generate_id,
     make_elm,
@@ -40,7 +40,7 @@ def maker(func: MT) -> MT:
 
 
 @maker
-def ExAid(
+def Reah(
     width: float,
     height: float,
     colors: Sequence[str],
@@ -70,11 +70,11 @@ def ExAid(
     return canvas
 
 
-GENM_OPTIONS = "rec tri cir xsh".split()
+DIONE_OPTIONS = "rec tri cir xsh".split()
 
 
 @maker
-def Genm(
+def Dione(
     width: float,
     height: float,
     colors: Sequence[str],
@@ -94,7 +94,7 @@ def Genm(
 
             faded = fade(
                 rng=rng,
-                element=make_elm(option=rng.choice(GENM_OPTIONS)),
+                element=make_elm(option=rng.choice(DIONE_OPTIONS)),
                 color=rng.choice(colors),
                 scale=rng.randint(*scale_limit) / 100,  # type: ignore
                 num=rng.choice((1, 3)),
@@ -107,7 +107,7 @@ def Genm(
 
 
 @maker
-def ParaDX(
+def Tethys(
     width: float,
     height: float,
     colors: Sequence[str],

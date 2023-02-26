@@ -2,7 +2,7 @@ import pytest
 from cytoolz.functoolz import identity
 from lxml.etree import tostring
 
-from delicacy.excite.excite import BackgroundMaker, MakerDict
+from delicacy.saturn.saturn import BackgroundMaker, MakerDict
 from delicacy.svglib.utils.utils import materialize
 
 

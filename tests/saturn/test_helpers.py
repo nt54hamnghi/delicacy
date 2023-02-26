@@ -4,9 +4,9 @@ from random import Random
 from unittest import mock
 
 import pytest
-from delicacy.excite.excite import GENM_OPTIONS
+from delicacy.saturn.saturn import DIONE_OPTIONS
 
-from delicacy.excite.helpers import (
+from delicacy.saturn.helpers import (
     fade,
     linear_plane,
     make_elm,
@@ -33,7 +33,7 @@ def test_sorted_randspace(seed, start, stop, k):
     assert set(s1).issubset(set(range(start, stop + 1)))
 
 
-@pytest.mark.parametrize("option", GENM_OPTIONS)
+@pytest.mark.parametrize("option", DIONE_OPTIONS)
 def test_make_elm(option):
     elm = make_elm(option=option)
     if option == "rec":
@@ -44,7 +44,7 @@ def test_make_elm(option):
         assert isinstance(elm, Path)
 
 
-@pytest.mark.parametrize("non_option", map(str.upper, GENM_OPTIONS))
+@pytest.mark.parametrize("non_option", map(str.upper, DIONE_OPTIONS))
 def test_make_elm_fail(non_option):
     with pytest.raises(ValueError):
         make_elm(option=non_option)
@@ -76,7 +76,7 @@ class TestPlane:
     @pytest.mark.parametrize(
         ("random", "rate"), product((0, 0.5, 1), linspace(0.1, 1, 5))
     )
-    @mock.patch("delicacy.excite.helpers.Random")
+    @mock.patch("delicacy.saturn.helpers.Random")
     def test_rand_plane(self, mock_rng, x, y, range, random, rate):
         mock_rng.random.return_value = random
 
@@ -105,7 +105,7 @@ class TestSpreadIt:
         "direction",
         product((-1, 1), repeat=2),
     )
-    @mock.patch("delicacy.excite.helpers.Random")
+    @mock.patch("delicacy.saturn.helpers.Random")
     def test_spread_it(self, mock_rng, k, spread, direction):
         mock_rng.choices.side_effect = [direction] + list(
             repeat(spread, times=k)
