@@ -1,20 +1,16 @@
-import re
 from abc import ABC, abstractmethod
-from functools import cache, partial
+from functools import partial
 from typing import Any
 
 from attrs import define, field
-from cytoolz.dicttoolz import keyfilter
 from lxml import etree
 from lxml.etree import Element, _Element
 
 from delicacy.svglib.elements.peripheral.style import Style
 from delicacy.svglib.elements.peripheral.transform import Transform
 
-svg_define = partial(define, str=False, order=False)
 
-
-@svg_define
+@define
 class SVGElement(ABC):
     _element: _Element = field(repr=False, init=False)
 
@@ -23,7 +19,7 @@ class SVGElement(ABC):
         """subclasses must define how to construct _element in this method"""
 
     @property
-    def base(self):
+    def base(self) -> _Element:
         return self._element
 
     def _element_repr(self) -> str:
@@ -35,33 +31,22 @@ class SVGElement(ABC):
     def __bytes__(self) -> bytes:
         return etree.tostring(self._element, pretty_print=True)
 
+    def __len__(self) -> int:
+        return len(self._element)
+
     def set(self, attr: str, value: Any) -> None:
-        self.base.set(attr, value)
+        self._element.set(attr, value)
 
     def get(self, attr: str) -> str | None:
-        return self.base.get(attr)
+        return self._element.get(attr)
 
 
-@svg_define
+@define
 class ExtendedElement(SVGElement):
-    @staticmethod
-    @cache
-    def extract_styles(
-        style_str: str, kind: str | None = None
-    ) -> dict[str, str]:
-        parts = [item.strip() for item in re.split(r"[:;]", style_str)]
-        keys, values = parts[:-1:2], parts[1::2]
-
-        style_dict = dict(zip(keys, values))
-
-        if kind is not None:
-            return keyfilter(lambda x: kind.lower() in x, style_dict)
-
-        return style_dict
-
     @property
-    def styles(self) -> dict[str, str]:
-        return self.extract_styles(self.get("style"))
+    def style(self) -> dict[str, str]:
+        style_str: str | None = self.get("style")
+        return Style.parse(style_str or "")
 
     def add_style(self, style: Style) -> None:
         super().set("style", str(style))
@@ -91,7 +76,7 @@ class ExtendedElement(SVGElement):
         super().set("transform", value)
 
 
-@svg_define
+@define
 class WrappingElement(ExtendedElement):
     def __init__(self, tag, **kwds: Any) -> None:
         self._element = Element(tag, attrib=kwds)
@@ -99,7 +84,7 @@ class WrappingElement(ExtendedElement):
     def __attrs_post_init__(self) -> None:  # pragma: no cover
         ...
 
-    def __call__(self, *childs: SVGElement, **kwds: Any) -> "WrappingElement":
+    def __call__(self, *childs: SVGElement, **kwds: Any):
         for k, v in kwds.items():
             self._element.set(k, v)
         self._element.extend(child.base for child in childs)

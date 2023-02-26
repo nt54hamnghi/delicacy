@@ -52,12 +52,18 @@ def test_element_bytes(element, toy):
 
 def test_element_str(element, toy):
     expected = tostring(element, pretty_print=True).decode("utf8")
+
     assert str(toy) == expected
 
 
+def test_element_len(toy):
+    assert len(toy) == 0
+
+
 def test_element_set(toy):
-    toy.set("set", str(...))
-    assert toy.base.get("set") == str(Ellipsis)
+    toy.set("ellipsis", str(...))
+
+    assert toy.base.get("ellipsis") == str(...)
 
 
 def test_element_get(toy):
@@ -66,77 +72,66 @@ def test_element_get(toy):
 
 @pytest.fixture
 def style_str():
-    return "stroke: white; stroke-opacity: 1; stroke-width: 5; fill: black; fill-opacity: 0.8;"  # noqa
+    stroke, fill = Stroke(), Fill()
+    return f"{stroke} {fill}"
 
 
 @pytest.fixture
 def style_dict():
-    return {
-        "stroke": "white",
-        "stroke-opacity": "1",
-        "stroke-width": "5",
-        "fill": "black",
-        "fill-opacity": "0.8",
-    }
+    stroke, fill = Stroke(), Fill()
+    return stroke.to_dict() | fill.to_dict()
 
 
-@pytest.mark.parametrize(
-    "kind",
-    (None, "stroke", "fill", "Stroke", "FILL"),
-)
-def test_extract_styles(style_str, style_dict, kind):
-    if kind is None:
-        assert TestElement.extract_styles(style_str) == style_dict
-    else:
-        expected = keyfilter(lambda x: kind.lower() in x, style_dict)
-        assert TestElement.extract_styles(style_str, kind) == expected
-
-
-def test__extract_styles_fail(style_str):
-    with pytest.raises(ValueError) as err:
-        TestElement.extract_styles(style_str, kind="")
-
-    assert str(err.value) == "not a valid style"
+def test_empty_style_property(toy):
+    assert toy.style == {}
 
 
 def test_add_style(toy):
-    stroke = Stroke("white", 1, 5)
+    stroke = Stroke()
     toy.add_style(stroke)
 
-    expected = "stroke: white; stroke-opacity: 1; stroke-width: 5;"
+    assert toy.style == stroke.to_dict()
+    assert toy.get("style") == str(stroke)
 
-    assert toy.base.get("style") == expected
 
+def test_apply_styles(toy, style_dict, style_str):
+    stroke, fill = Stroke(), Fill()
+    toy.apply_styles(stroke, fill)
 
-def test_apply_styles(style_str, toy):
-    toy.apply_styles(Stroke("white", 1, 5), Fill("black", 0.8))
-    assert toy.base.get("style") == style_str
+    assert toy.style == style_dict
+    assert toy.get("style") == style_str
 
 
 def test_set_style_normal(toy):
-    stroke = Stroke("white", 1, 5)
-    toy.set_style(stroke)
-    expected = "stroke: white; stroke-opacity: 1; stroke-width: 5;"
+    white_stroke = Stroke("white")
+    toy.set_style(white_stroke)
 
-    assert toy.base.get("style") == expected
+    assert toy.style == white_stroke.to_dict()
+    assert toy.get("style") == str(white_stroke)
 
 
-def test_set_style_existing(toy):
-    toy.apply_styles(Stroke("white", 1, 5), Fill("black", 0.8))
+def test_set_style_existing_stroke(toy):
+    stroke, fill = Stroke(), Fill()
+    toy.apply_styles(stroke, fill)
 
-    toy.set_style(Stroke("orange", 0.5, 0.5))
-    expected = "stroke: orange; stroke-opacity: 0.5; stroke-width: 0.5; fill: black; fill-opacity: 0.8;"  # noqa
-    assert toy.base.get("style") == expected
+    orange_stroke = Stroke("orange", 0.5, 0.5)
+    toy.set_style(orange_stroke)
 
-    toy.set_style(Fill("orange", 0.5))
-    expected = "fill: orange; fill-opacity: 0.5; stroke: orange; stroke-opacity: 0.5; stroke-width: 0.5;"  # noqa
-    assert toy.base.get("style") == expected
+    assert toy.style == orange_stroke.to_dict() | fill.to_dict()
+    assert toy.get("style") == f"{orange_stroke} {fill}"
+
+    orange_fill = Fill("orange", 0.5, "nonzero")
+    toy.set_style(orange_fill)
+
+    assert toy.style == orange_fill.to_dict() | orange_stroke.to_dict()
+    assert toy.get("style") == f"{orange_fill} {orange_stroke}"
 
 
 def test_add_transform(toy):
     transform = Transform().translate(5).rotate(45).scale(5)
     toy.add_transform(transform)
     expected = "translate(5,0) rotate(45) scale(5,5)"
+
     assert toy.base.get("transform") == expected
 
 
@@ -161,21 +156,22 @@ class TestWrappingElement:
 
     def test_create(self, tag):
         wrap = WrappingElement(tag)
+
         assert wrap.base.tag == tag
 
     def test_create_with_kwds(self, tag):
         attrib = dict(id="id", name="name")
         wrap = WrappingElement(tag, **attrib)
+
         assert wrap.base.attrib == attrib
 
     def test_call(self, tag, childs):
+        wrapper = WrappingElement(tag)
+        wrapper(*childs)
 
-        wrap = WrappingElement(tag)
-        wrap(*childs)
+        assert len(wrapper) == 10
 
-        assert len(wrap.base) == 10
-
-        for c, w in zip(childs, wrap.base):
+        for c, w in zip(childs, wrapper.base):
             assert c.base is w
 
     def test_call_with_kwds(self, tag, childs):
@@ -188,16 +184,16 @@ class TestWrappingElement:
         assert wrap.base.attrib == attrib
 
     def test_create_wraps(self, tag):
-        wrp_0 = wraps(tag)
-        wrp_1 = wraps(tag)
+        wrap_0 = wraps(tag)
+        wrap_1 = wraps(tag)
 
-        assert wrp_0 is not wrp_1
-        assert isinstance(wrp_0, WrappingElement)
-        assert isinstance(wrp_1, WrappingElement)
+        assert wrap_0 is not wrap_1
+        assert isinstance(wrap_0, WrappingElement)
+        assert isinstance(wrap_1, WrappingElement)
 
     def test_append(self, tag, childs):
-        wrp = WrappingElement(tag)
+        wrapper = WrappingElement(tag)
         for child in childs:
-            wrp.append(child)
+            wrapper.append(child)
 
-        assert len(wrp.base) == len(childs)
+        assert len(wrapper) == len(childs)
