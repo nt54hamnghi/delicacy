@@ -71,18 +71,20 @@ def rand_plane(
     yield from (coord for coord in plane if rng.random() < rate)
 
 
-def make_elm(side: int = 120, option: str = "rec") -> ExtendedElement:
+def make_shape(
+    side: float = 120, option: str = "rec", x: int = 0, y: int = 0
+) -> ExtendedElement:
     """make shape based on option"""
 
-    match option:  # noqa
-        case "rec":
-            return Rectangle.make_rectangle(0, 0, side, side)
-        case "tri":
-            return ETriangle(side=side)
+    match option:
         case "cir":
-            return Circle.make_circle(side // 2, 0, 0)
+            return Circle.make_circle(side // 2, x, y)
+        case "rec":
+            return Rectangle.make_rectangle(x, y, side, side)
+        case "tri":
+            return ETriangle(location=Point(x, y), side=side)
         case "xsh":
-            return XShape(length=side)
+            return XShape(location=Point(x, y), length=side)
         case _:
             raise ValueError(
                 f'option: {option} is not one of "rec", "tri", "cir", "xsh"'

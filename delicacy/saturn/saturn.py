@@ -11,7 +11,7 @@ from lxml.etree import _Element
 from delicacy.saturn.helpers import (
     fade,
     generate_id,
-    make_elm,
+    make_shape,
     rand_plane,
     sorted_randspace,
 )
@@ -23,7 +23,7 @@ from delicacy.svglib.colors.palette import (
 from delicacy.svglib.elements.element import WrappingElement
 from delicacy.svglib.elements.peripheral.style import Fill, Stroke
 from delicacy.svglib.elements.peripheral.transform import Transform
-from delicacy.svglib.elements.shapes import Circle, Line
+from delicacy.svglib.elements.shapes import Line
 from delicacy.svglib.elements.use import Use
 from delicacy.svglib.utils.utils import get_canvas, linspace
 
@@ -94,7 +94,7 @@ def Dione(
 
             faded = fade(
                 rng=rng,
-                element=make_elm(option=rng.choice(DIONE_OPTIONS)),
+                element=make_shape(option=rng.choice(DIONE_OPTIONS)),
                 color=rng.choice(colors),
                 scale=rng.randint(*scale_limit) / 100,  # type: ignore
                 num=rng.choice((1, 3)),
@@ -120,7 +120,7 @@ def Tethys(
 
     # proportional scale with respect to the standard frame of 512 x 512
     # so the patterns can appear nicely
-    offset, radius = side * 20 // 512, side * 6 // 512
+    offset, measurement = side * 20 // 512, side * 6 // 512
 
     _range = (offset, (side // 2) - offset)
     plane = rand_plane(
@@ -132,9 +132,11 @@ def Tethys(
 
     for x, y in plane:
         color = rng.choice(colors)
-        cir = Circle.make_circle(radius, x, y)
-        cir.apply_styles(Stroke(color), Fill(color))
-        grp.append(cir)
+        option = rng.choice(("rec", "cir", "tri"))
+        shape = make_shape(measurement * 2, option, x, y)
+        # shape = Circle.make_circle(measurement, x, y)
+        shape.apply_styles(Stroke(color), Fill(color))
+        grp.append(shape)
 
     canvas.append(grp.base)
 

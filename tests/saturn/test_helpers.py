@@ -9,7 +9,7 @@ from delicacy.saturn.saturn import DIONE_OPTIONS
 from delicacy.saturn.helpers import (
     fade,
     linear_plane,
-    make_elm,
+    make_shape,
     rand_plane,
     sorted_randspace,
     spreadit,
@@ -35,7 +35,7 @@ def test_sorted_randspace(seed, start, stop, k):
 
 @pytest.mark.parametrize("option", DIONE_OPTIONS)
 def test_make_elm(option):
-    elm = make_elm(option=option)
+    elm = make_shape(option=option)
     if option == "rec":
         assert isinstance(elm, Rectangle)
     elif option == "cir":
@@ -47,7 +47,7 @@ def test_make_elm(option):
 @pytest.mark.parametrize("non_option", map(str.upper, DIONE_OPTIONS))
 def test_make_elm_fail(non_option):
     with pytest.raises(ValueError):
-        make_elm(option=non_option)
+        make_shape(option=non_option)
 
 
 @pytest.mark.parametrize(
@@ -139,7 +139,7 @@ class TestSpreadIt:
     ),
 )
 def test_fade(option, num, scale, location):
-    elm = make_elm(option=option)
+    elm = make_shape(option=option)
     faded = fade(
         random, elm, "black", scale, num=num, location=location, rotate=90
     )
