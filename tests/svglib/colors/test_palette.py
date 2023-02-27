@@ -39,6 +39,7 @@ class TestColorIter:
     @pytest.mark.parametrize(("hue_var", "sat_var"), ((25, 25), (30, 60)))
     def test_analogous(self, mock_rng, num, hue_var, sat_var):
         mock_rng.randint.return_value = RANDINT
+        mock_rng.getrandbits.return_value = RANDINT
 
         palette = tuple(analogous(num, mock_rng, hue_var, sat_var))
         assert len(palette) == num
@@ -53,7 +54,7 @@ class TestColorIter:
 
     def test_monochromatic(self, mock_rng, num):
         _range = range(RANDINT, RANDINT + num)
-        mock_rng.randint.return_value = RANDINT
+        mock_rng.getrandbits.return_value = RANDINT
         mock_rng.choices.return_value = _range
 
         plt = tuple(monochromatic(num, mock_rng))
@@ -65,7 +66,7 @@ class TestColorIter:
             assert val in _range
 
     def test_shade(self, mock_rng, num):
-        mock_rng.randint.return_value = RANDINT
+        mock_rng.getrandbits.return_value = RANDINT
 
         plt = tuple(shade(num, mock_rng))
         assert len(plt) == num
@@ -77,7 +78,7 @@ class TestColorIter:
             assert val in val_space
 
     def test_tint(self, mock_rng, num):
-        mock_rng.randint.return_value = RANDINT
+        mock_rng.getrandbits.return_value = RANDINT
 
         plt = tint(num, mock_rng)
         plt = tuple(plt)

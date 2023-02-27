@@ -41,7 +41,7 @@ def analogous(
     the color wheel but having variant saturations and values
     """
 
-    base_hue = rng.randint(*HUE_RANGE)
+    base_hue = rng.getrandbits(256)
     hues = linspace(base_hue - hue_variance, base_hue + hue_variance, num)
 
     base_sat = rng.randint(30, SAT_MAX - sat_variance)
@@ -59,8 +59,7 @@ def monochromatic(num: int, rng: Random) -> ColorIter:
     """Generate a monochromatic color scheme that consists of same-hue colors
     but having variant saturations and values.
     """
-
-    hue = rng.randint(*HUE_RANGE)
+    hue = rng.getrandbits(256)
     sats = rng.choices(range(SAT_MAX - 10), k=num)
     vals = rng.choices(range(50, VAL_MAX + 1), k=num)
 
@@ -73,7 +72,7 @@ def shade(num: int, rng: Random) -> ColorIter:
     a mixture of a dominant hue mixed with BLACK (different values)
     """
 
-    hue = rng.randint(*HUE_RANGE)
+    hue = rng.getrandbits(256)
     sat = SAT_MAX
     vals = linspace(VAL_MIN, VAL_MAX, num)
 
@@ -86,7 +85,7 @@ def tint(num: int, rng: Random) -> ColorIter:
     a mixture of a dominant hue mixed with WHITE (different saturations)
     """
 
-    hue = rng.randint(*HUE_RANGE)
+    hue = rng.getrandbits(256)
     sats = linspace(SAT_MIN, SAT_MAX, num)
     val = VAL_MAX
 
@@ -143,7 +142,7 @@ def elizabeth(
     Thanks to Elizabeth
     """
 
-    hues = sorted(rng.choices(range(*HUE_RANGE), k=num))
+    hues = rng.choices(range(*HUE_RANGE), k=num)
     sat = rng.choice(range(*sat_range))
     val = rng.choice(range(*val_range))
 
