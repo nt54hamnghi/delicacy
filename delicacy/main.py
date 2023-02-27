@@ -5,10 +5,10 @@ from fastapi import FastAPI, Query
 from fastapi.responses import Response
 
 from delicacy.config import COLLECTION_DIR
-from delicacy.saturn.saturn import MakerDict
 from delicacy.generate import generate
 from delicacy.igen.collection import Collection
 from delicacy.igen.igen import ImageGenerator
+from delicacy.saturn.saturn import MakerDict
 
 app = FastAPI()
 

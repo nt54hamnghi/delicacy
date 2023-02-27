@@ -1,8 +1,8 @@
 from PIL import Image as PILImage
 from wand import image as WandImage
 
-from delicacy.saturn.saturn import BackgroundMaker, MakerFunc
 from delicacy.igen.igen import ImageGenerator
+from delicacy.saturn.saturn import BackgroundMaker, MakerFunc
 from delicacy.svglib.utils.utils import materialize, wand2pil
 
 

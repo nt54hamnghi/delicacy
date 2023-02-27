@@ -23,7 +23,7 @@ class Style(ABC):
         return cls.__name__.lower()
 
     def get_prop_name(self, prop: str) -> str:
-        style = self.name()
+        style = self.__class__.__name__.lower()
         return style if prop == "color" else f"{style}-{prop}"
 
     @property
