@@ -92,6 +92,8 @@ class ImageGenerator:
     def generate(self, phrase: str, *args, **kwds) -> Image.Image:
         if len(phrase) > 32:
             raise ValueError("phrase length must be less than 32")
+
         seed = self._hash(normalize("NFC", phrase))
         layers = self._pick_layers(seed)
+
         return self._assemble(layers, *args, **kwds)

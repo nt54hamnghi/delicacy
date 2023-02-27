@@ -7,7 +7,7 @@ readme = "README.md"
 
 
 [tool.poetry.dependencies]
-python = "3.10.*"
+python = "3.11.*"
 attrs = "22.1.*"
 bitstring = "3.1.*"
 decorator = "5.1.*"
@@ -57,7 +57,7 @@ build-backend = "poetry.core.masonry.api"
 [poetry.run.script]
 # scripts for developments (mimic package.json)
 build = 'poetry build'
-cov = 'coverage run --branch -m pytest && coverage report'
+cov = 'coverage run --branch -m pytest && coverage report --skip-empty --show-missing'
 dev = 'uvicorn delicacy.main:app --reload'
 test = 'pytest'
 test-verbose = 'pytest -vs'

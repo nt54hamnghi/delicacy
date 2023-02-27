@@ -1,5 +1,4 @@
 import pytest
-from cytoolz.dicttoolz import keyfilter
 from lxml.etree import Element, _Element, tostring
 
 from delicacy.svglib.elements.element import (
