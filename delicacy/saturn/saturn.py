@@ -165,7 +165,7 @@ class BackgroundMaker:
         palette = palette or self.rng.choice(PREFERRED_PALETTES)
         self.palette_gen = PaletteGenerator(palette, seed)
 
-    def generate(
+    def make(
         self, width: float = 320, height: float = 320, n_colors: int = 4
     ) -> Canvas:
         colors = self.palette_gen.generate(n_colors, to_hex=True)

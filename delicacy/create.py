@@ -23,11 +23,11 @@ def make_background(
 ) -> PILImage.Image:
     bgmaker = BackgroundMaker.from_phrase(phrase, maker)
 
-    canvas = bgmaker.generate(width, height)
+    canvas = bgmaker.make(width, height)
     return materialize(canvas, background)
 
 
-def generate(
+def create(
     phrase: str,
     maker: MakerFunc,
     gen: ImageGenerator,

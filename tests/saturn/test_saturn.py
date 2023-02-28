@@ -11,8 +11,8 @@ class TestBGMakerReproducibility:
     @pytest.mark.parametrize("seed", range(2))
     def test_bgmaker(self, maker, seed):
 
-        first_bg = BackgroundMaker(maker, seed=seed).generate()
-        second_bg = BackgroundMaker(maker, seed=seed).generate()
+        first_bg = BackgroundMaker(maker, seed=seed).make()
+        second_bg = BackgroundMaker(maker, seed=seed).make()
 
         assert tostring(first_bg) == tostring(second_bg)
         assert materialize(first_bg) == materialize(second_bg)
@@ -20,8 +20,8 @@ class TestBGMakerReproducibility:
     @pytest.mark.parametrize("phrase", ("random", "hash"))
     def test_bgmaker_from_phrase(self, maker, phrase):
 
-        first_bg = BackgroundMaker.from_phrase(phrase, maker).generate()
-        second_bg = BackgroundMaker.from_phrase(phrase, maker).generate()
+        first_bg = BackgroundMaker.from_phrase(phrase, maker).make()
+        second_bg = BackgroundMaker.from_phrase(phrase, maker).make()
 
         assert tostring(first_bg) == tostring(second_bg)
         assert materialize(first_bg) == materialize(second_bg)

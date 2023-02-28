@@ -5,7 +5,7 @@ from fastapi import FastAPI, Query
 from fastapi.responses import Response
 
 from delicacy.config import COLLECTION_DIR
-from delicacy.generate import generate
+from delicacy.create import create
 from delicacy.igen.collection import Collection
 from delicacy.igen.igen import ImageGenerator
 from delicacy.saturn.saturn import MakerDict
@@ -51,9 +51,7 @@ async def make(
     except KeyError:
         raise ValueError("Invalid maker type")
 
-    img = generate(
-        phrase, maker, robot_gen, background_color=get_theme(theme)
-    )
+    img = create(phrase, maker, robot_gen, background_color=get_theme(theme))
 
     with BytesIO() as imgbytes:
         img.save(imgbytes, "png")
