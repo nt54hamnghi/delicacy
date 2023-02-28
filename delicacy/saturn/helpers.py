@@ -1,6 +1,7 @@
 from collections.abc import Iterator
 from hashlib import sha3_256
 from itertools import product, repeat
+from math import radians
 from random import Random
 
 from delicacy.svglib.elements.element import (
@@ -78,7 +79,10 @@ def make_shape(
 
     match option:
         case "cir":
-            return Circle.make_circle(side // 2, x, y)
+            radius = side // 2
+            cx = x + radius if x != 0 else x
+            cy = y + radius if y != 0 else y
+            return Circle.make_circle(radius, cx, cy)
         case "rec":
             return Rectangle.make_rectangle(x, y, side, side)
         case "tri":
