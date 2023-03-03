@@ -1,7 +1,6 @@
 from collections.abc import Iterator
 from hashlib import sha3_256
 from itertools import product, repeat
-from math import radians
 from random import Random
 
 from delicacy.svglib.elements.element import (
