@@ -11,7 +11,6 @@ ENV PIP_NO_CACHE_DIR=off
 
 # system setup:
 WORKDIR /code
-RUN apt-get update
 
 RUN pip install "poetry==$POETRY_VERSION"
 COPY pyproject.toml poetry.lock /code/
