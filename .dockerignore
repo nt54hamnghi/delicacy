@@ -1,0 +1,29 @@
+# Unit test / coverage reports
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+tests
+
+
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow
+__pypackages__/
+
+# Environments
+.env
+.venv
+env/
+venv/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# others
+temp
+playground.ipynb
+
+# other stuff
+LICENSE
+README.md
