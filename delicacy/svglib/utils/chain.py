@@ -83,7 +83,7 @@ class chainable:
                 raise AttributeError(msg)
 
             # call __get__ to retrieve the underlying method
-            self.managed_updater.__get__(instance)(instance, value)
+            self.managed_updater.__get__(instance)(instance, value)  # type: ignore
 
             return instance
 

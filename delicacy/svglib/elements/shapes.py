@@ -1,6 +1,7 @@
 from collections.abc import Callable, Iterable
 from itertools import chain
 from math import radians, tan
+from typing import cast
 
 from attrs import define
 from decorator import decorator
@@ -149,12 +150,13 @@ def ETriangle(
     x, y = location
     half = side // 2
     angle = radians(60)
+
     path = Path().m(x, y).l(side, 0).l(-half, tan(angle) * half).z()
 
     if not styless:
         path.apply_styles(Stroke(), Fill(color="none"))
 
-    return path
+    return cast(Path, path)
 
 
 def XShape(
@@ -167,4 +169,4 @@ def XShape(
     if not styless:
         path.apply_styles(Stroke(), Fill(color="none"))
 
-    return path
+    return cast(Path, path)

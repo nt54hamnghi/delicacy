@@ -33,12 +33,25 @@ types-Pillow = "9.2.1"
 coverage = "^7.1.0"
 
 [tool.mypy]
-python_version = "3.10"
-files = "/windows10/Users/hamng/Desktop/projects/delicacy/delicacy/*.py"
-disallow_incomplete_defs = false
-no_implicit_optional= true
+python_version = "3.11"
+# output
 pretty = true
-
+# include
+files = ["delicacy/**/*.py"]
+# optional
+no_implicit_optional = true
+# function defs
+check_untyped_defs = true
+allow_untyped_defs = true
+allow_incomplete_defs = true
+allow_any_explicit = true
+# warning
+warn_unreachable = true
+warn_return_any = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+# strictness
+strict_equality = true
 
 [[tool.mypy.overrides]]
 module = [

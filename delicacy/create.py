@@ -20,7 +20,7 @@ def make_background(
     width: float = 320,
     height: float = 320,
     background: str | None = None,
-) -> PILImage.Image:
+) -> WandImage.Image:
     bgmaker = BackgroundMaker.from_phrase(phrase, maker)
 
     canvas = bgmaker.make(width, height)

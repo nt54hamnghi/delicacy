@@ -144,7 +144,7 @@ def Tethys(
     next(flip)
 
     for translate, scale in flip:
-        use = Use(cid)  # type: ignore
+        use = Use(cid)
         use.add_transform(Transform().translate(*translate).scale(*scale))
         canvas.append(use.base)
     return canvas

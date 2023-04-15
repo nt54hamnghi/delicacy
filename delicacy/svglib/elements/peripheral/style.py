@@ -42,7 +42,7 @@ class Style(ABC):
     def to_dict(self) -> dict[str, Any]:
         prop_map = keymap(self.get_prop_name)
         filter_none = valfilter(lambda x: x is not None)
-        return pipe(self, asdict, prop_map, filter_none)
+        return pipe(self, asdict, prop_map, filter_none)  # type: ignore
 
     @staticmethod
     def parse(style_str: str, filter_by: str | None = None) -> dict[str, str]:
@@ -53,7 +53,7 @@ class Style(ABC):
         style_dict = dict(zip(props, values))
 
         if filter_by is not None:
-            return keyfilter(lambda x: filter_by.lower() in x, style_dict)
+            return keyfilter(lambda x: filter_by.lower() in x, style_dict)  # type: ignore
 
         return style_dict
 
