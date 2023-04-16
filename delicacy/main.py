@@ -51,7 +51,14 @@ async def make(
     except KeyError:
         raise ValueError("Invalid maker type")
 
-    img = create(phrase, maker, robot_gen, background_color=get_theme(theme))
+    img = create(
+        phrase,
+        maker,
+        robot_gen,
+        background_color=get_theme(theme),
+        width=1024,
+        height=1024,
+    )
 
     with BytesIO() as imgbytes:
         img.save(imgbytes, "png")
