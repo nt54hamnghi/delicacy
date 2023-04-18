@@ -17,6 +17,9 @@ robot_path = COLLECTION_DIR / "robot"
 robot_collection = Collection("Robot", robot_path)
 robot_gen = ImageGenerator(robot_collection)
 
+cat_path = COLLECTION_DIR / "cat"
+cat_collection = Collection("Cat", cat_path)
+cat_gen = ImageGenerator(cat_collection)
 
 # workaround to dynamically create a StrEnum from a dictionary's keys
 # as long as a function is decorated with @maker,
@@ -54,10 +57,8 @@ async def make(
     img = create(
         phrase,
         maker,
-        robot_gen,
+        cat_gen,
         background_color=get_theme(theme),
-        width=1024,
-        height=1024,
     )
 
     with BytesIO() as imgbytes:
