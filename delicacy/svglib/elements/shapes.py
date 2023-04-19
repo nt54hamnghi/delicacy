@@ -1,6 +1,8 @@
-from collections.abc import Callable, Iterable
+from collections.abc import Callable
+from collections.abc import Iterable
 from itertools import chain
-from math import radians, tan
+from math import radians
+from math import tan
 from typing import cast
 
 from attrs import define
@@ -9,7 +11,8 @@ from lxml.etree import Element
 
 from delicacy.svglib.elements.element import ExtendedElement
 from delicacy.svglib.elements.peripheral.point import Point
-from delicacy.svglib.elements.peripheral.style import Fill, Stroke
+from delicacy.svglib.elements.peripheral.style import Fill
+from delicacy.svglib.elements.peripheral.style import Stroke
 from delicacy.svglib.utils.chain import chainable
 from delicacy.svglib.utils.utils import Size
 
@@ -84,9 +87,7 @@ class Path(ExtendedElement):
     q = chainable(relative(Q.target))
 
     @chainable
-    def C(
-        self, x1: float, y1: float, x2: float, y2: float, x: float, y: float
-    ) -> str:
+    def C(self, x1: float, y1: float, x2: float, y2: float, x: float, y: float) -> str:
         return f" C{x1},{y1} {x2},{y2} {x},{y}"
 
     c = chainable(relative(C.target))
@@ -102,9 +103,7 @@ class Path(ExtendedElement):
         x: float,
         y: float,
     ) -> str:
-        return (
-            f" A{rx},{ry} {x_rotation} {large_arc_flag},{sweep_flag} {x},{y}"
-        )
+        return f" A{rx},{ry} {x_rotation} {large_arc_flag},{sweep_flag} {x},{y}"
 
     a = chainable(relative(A.target))
 

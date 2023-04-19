@@ -1,5 +1,6 @@
 from collections.abc import Callable
-from typing import NoReturn, TypeVar
+from typing import NoReturn
+from typing import TypeVar
 
 from cytoolz.dicttoolz import valfilter
 
@@ -24,9 +25,7 @@ class _updater:
     def __set__(self, instance, value) -> NoReturn:
         raise AttributeError("setter not available for updater methods")
 
-    def __get__(
-        self, instance: T | None = None, owner: type[T] | None = None
-    ):
+    def __get__(self, instance: T | None = None, owner: type[T] | None = None):
         if instance is None:
             return self
 
@@ -59,9 +58,7 @@ class chainable:
     def __set__(self, instance, value) -> NoReturn:
         raise AttributeError("setter not available for chained methods")
 
-    def __get__(
-        self, instance: T | None = None, owner: type[T] | None = None
-    ):
+    def __get__(self, instance: T | None = None, owner: type[T] | None = None):
         if instance is None:
             return self
 

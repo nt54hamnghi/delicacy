@@ -1,13 +1,17 @@
 import hashlib
 import os
-from collections.abc import Callable, Iterator
-from typing import Protocol, TypeAlias, cast
+from collections.abc import Callable
+from collections.abc import Iterator
+from typing import cast
+from typing import Protocol
+from typing import TypeAlias
 from unicodedata import normalize
 
 from bitstring import BitArray
 from PIL import Image
 
-from delicacy.igen.collection import Collection, PathType
+from delicacy.igen.collection import Collection
+from delicacy.igen.collection import PathType
 
 
 # Protocol definitions are not supposed to be executed, thus excluded from coverage report
@@ -41,7 +45,6 @@ class ImageGenerator:
         self.hash_func = hash_func
 
     def _hash(self, key: str | bytes, data: SupportStr = "") -> BitArray:
-
         _key = key if isinstance(key, bytes) else key.encode("utf8")
         _data = str(data).encode("utf8")
 

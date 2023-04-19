@@ -1,10 +1,18 @@
 import re
 from abc import ABC
-from typing import Any, Iterator
+from typing import Any
+from typing import Iterator
 
-from attrs import asdict, field, frozen
-from attrs.validators import and_, ge, in_, le
-from cytoolz.curried import keyfilter, keymap, valfilter
+from attrs import asdict
+from attrs import field
+from attrs import frozen
+from attrs.validators import and_
+from attrs.validators import ge
+from attrs.validators import in_
+from attrs.validators import le
+from cytoolz.curried import keyfilter
+from cytoolz.curried import keymap
+from cytoolz.curried import valfilter
 from cytoolz.functoolz import pipe
 
 

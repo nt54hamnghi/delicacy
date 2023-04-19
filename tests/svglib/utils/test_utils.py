@@ -4,13 +4,11 @@ from lxml.etree import _Element
 from PIL import Image as PILImage
 from wand import image as WandImage
 
-from delicacy.svglib.utils.utils import (
-    eprint,
-    get_canvas,
-    linspace,
-    materialize,
-    wand2pil,
-)
+from delicacy.svglib.utils.utils import eprint
+from delicacy.svglib.utils.utils import get_canvas
+from delicacy.svglib.utils.utils import linspace
+from delicacy.svglib.utils.utils import materialize
+from delicacy.svglib.utils.utils import wand2pil
 
 STANDARD_CANVAS = {
     "width": "512",
@@ -54,9 +52,7 @@ def test_linspace_fail_zero_samples():
     assert str(err.value) == "number of samples, must be non-negative"
 
 
-@pytest.mark.parametrize(
-    ("start", "stop"), ((0, 0), (1, 0)), ids=["equal", "greater"]
-)
+@pytest.mark.parametrize(("start", "stop"), ((0, 0), (1, 0)), ids=["equal", "greater"])
 def test_linspace_fail_start_stop(start, stop):
     with pytest.raises(ValueError) as err:
         linspace(start, stop, 10)

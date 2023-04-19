@@ -2,7 +2,9 @@ from itertools import product
 
 import pytest
 
-from delicacy.svglib.elements.peripheral.style import Fill, Stroke, Style
+from delicacy.svglib.elements.peripheral.style import Fill
+from delicacy.svglib.elements.peripheral.style import Stroke
+from delicacy.svglib.elements.peripheral.style import Style
 
 
 def test_create_stroke_with_default():
@@ -27,8 +29,10 @@ def test_style_to_dict():
     ),
 )
 def test_create_stroke(args):
-    expected = "stroke: {}; stroke-opacity: {}; stroke-width: {}; stroke-linecap: {};".format(
-        *args
+    expected = (
+        "stroke: {}; stroke-opacity: {}; stroke-width: {}; stroke-linecap: {};".format(
+            *args
+        )
     )  # noqa
     stroke = Stroke(*args)
     assert str(stroke) == expected

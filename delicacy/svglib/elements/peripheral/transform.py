@@ -42,9 +42,7 @@ class Transform:
         return f" skewY({y})"
 
     @chainable
-    def matrix(
-        self, a: float, b: float, c: float, d: float, e: float, f: float
-    ) -> str:
+    def matrix(self, a: float, b: float, c: float, d: float, e: float, f: float) -> str:
         return f" matrix({a},{b},{c},{d},{e},{f})"
 
     def __call__(self) -> str:

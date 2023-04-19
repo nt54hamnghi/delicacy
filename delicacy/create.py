@@ -2,13 +2,13 @@ from PIL import Image as PILImage
 from wand import image as WandImage
 
 from delicacy.igen.igen import ImageGenerator
-from delicacy.saturn.saturn import BackgroundMaker, MakerFunc
-from delicacy.svglib.utils.utils import materialize, wand2pil
+from delicacy.saturn.saturn import BackgroundMaker
+from delicacy.saturn.saturn import MakerFunc
+from delicacy.svglib.utils.utils import materialize
+from delicacy.svglib.utils.utils import wand2pil
 
 
-def combine(
-    foreground: PILImage.Image, background: WandImage.Image
-) -> PILImage.Image:
+def combine(foreground: PILImage.Image, background: WandImage.Image) -> PILImage.Image:
     img = wand2pil(background)
     img.paste(foreground, (0, 0), foreground)
     return img
@@ -36,7 +36,5 @@ def create(
     background_color: str = "#09132b",
 ) -> PILImage.Image:
     character = gen.generate(phrase, size=(width, height))
-    background = make_background(
-        phrase, maker, width, height, background_color
-    )
+    background = make_background(phrase, maker, width, height, background_color)
     return combine(character, background)

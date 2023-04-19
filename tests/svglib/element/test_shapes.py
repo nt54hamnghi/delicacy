@@ -1,18 +1,18 @@
-from math import pi, tan
+from math import pi
+from math import tan
 
 import pytest
-from lxml.etree import Element, tostring
+from lxml.etree import Element
+from lxml.etree import tostring
 
 from delicacy.svglib.elements.peripheral.point import Point
-from delicacy.svglib.elements.shapes import (
-    Circle,
-    ETriangle,
-    Line,
-    Path,
-    Polygon,
-    Rectangle,
-    XShape,
-)
+from delicacy.svglib.elements.shapes import Circle
+from delicacy.svglib.elements.shapes import ETriangle
+from delicacy.svglib.elements.shapes import Line
+from delicacy.svglib.elements.shapes import Path
+from delicacy.svglib.elements.shapes import Polygon
+from delicacy.svglib.elements.shapes import Rectangle
+from delicacy.svglib.elements.shapes import XShape
 from delicacy.svglib.utils.utils import Size
 
 
@@ -44,9 +44,7 @@ def test_create_rectangle():
     rec = Rectangle(Point(1, 1), Size(120, 120))
     mrec = Rectangle.make_rectangle(1, 1, 120, 120)
 
-    expected = Element(
-        "rect", x="1", y="1", width="120", height="120", rx="0", ry="0"
-    )
+    expected = Element("rect", x="1", y="1", width="120", height="120", rx="0", ry="0")
 
     assert str(rec) == to_string(expected)
     assert str(mrec) == to_string(expected)

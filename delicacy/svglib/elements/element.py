@@ -1,10 +1,13 @@
-from abc import ABC, abstractmethod
+from abc import ABC
+from abc import abstractmethod
 from functools import partial
 from typing import Any
 
-from attrs import define, field
+from attrs import define
+from attrs import field
 from lxml import etree
-from lxml.etree import Element, _Element
+from lxml.etree import _Element
+from lxml.etree import Element
 
 from delicacy.svglib.elements.peripheral.style import Style
 from delicacy.svglib.elements.peripheral.transform import Transform
@@ -60,9 +63,7 @@ class ExtendedElement(SVGElement):
         else:
             new = str(style)
             remain = ";".join(
-                item
-                for item in current.split(";")
-                if style.name() not in item
+                item for item in current.split(";") if style.name() not in item
             ).strip()
             super().set("style", f"{new} {remain}")
 

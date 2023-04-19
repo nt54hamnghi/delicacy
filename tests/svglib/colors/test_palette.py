@@ -1,27 +1,32 @@
-from itertools import count, product, repeat
+from itertools import count
+from itertools import product
+from itertools import repeat
 from operator import mod
-from random import Random, choice, choices
+from random import choice
+from random import choices
+from random import Random
 from unittest import mock
 
 import pytest
 from cytoolz.functoolz import identity
 from cytoolz.itertoolz import take
 
-from delicacy.svglib.colors.hsv import HUE_MAX, SAT_MAX, SAT_MIN, VAL_MAX
-from delicacy.svglib.colors.palette import (
-    EARTH,
-    JEWEL,
-    NEON,
-    PASTEL,
-    PaletteGenerator,
-    Palettes,
-    analogous,
-    elizabeth,
-    monochromatic,
-    segment,
-    shade,
-    tint,
-)
+from delicacy.svglib.colors.hsv import HUE_MAX
+from delicacy.svglib.colors.hsv import SAT_MAX
+from delicacy.svglib.colors.hsv import SAT_MIN
+from delicacy.svglib.colors.hsv import VAL_MAX
+from delicacy.svglib.colors.palette import analogous
+from delicacy.svglib.colors.palette import EARTH
+from delicacy.svglib.colors.palette import elizabeth
+from delicacy.svglib.colors.palette import JEWEL
+from delicacy.svglib.colors.palette import monochromatic
+from delicacy.svglib.colors.palette import NEON
+from delicacy.svglib.colors.palette import PaletteGenerator
+from delicacy.svglib.colors.palette import Palettes
+from delicacy.svglib.colors.palette import PASTEL
+from delicacy.svglib.colors.palette import segment
+from delicacy.svglib.colors.palette import shade
+from delicacy.svglib.colors.palette import tint
 from delicacy.svglib.utils.utils import linspace
 
 
@@ -97,7 +102,6 @@ class TestColorIter:
         ids="complementary triad square".split(),
     )
     def test_segment(self, mock_rng, num, n_segments):
-
         mock_rng.randint.return_value = RANDINT
         mock_rng.choices = choices
 
@@ -148,7 +152,6 @@ class TestPaletteGenerator:
 
     @pytest.mark.parametrize("seed", range(3))
     def test_palette_gen_reproducible(self, func, num, to_hex, seed):
-
         pgen0 = PaletteGenerator(func, seed)
         plt0 = pgen0.generate(num, to_hex)
 

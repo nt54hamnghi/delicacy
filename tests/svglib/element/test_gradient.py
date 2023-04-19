@@ -1,11 +1,9 @@
 import pytest
 
-from delicacy.svglib.elements.gradient import (
-    BaseGradient,
-    LinearGradient,
-    RadialGradient,
-    create_gradient,
-)
+from delicacy.svglib.elements.gradient import BaseGradient
+from delicacy.svglib.elements.gradient import create_gradient
+from delicacy.svglib.elements.gradient import LinearGradient
+from delicacy.svglib.elements.gradient import RadialGradient
 from delicacy.svglib.utils.utils import linspace
 
 
@@ -46,9 +44,7 @@ def test_create_linear_gradient(id, x1, y1, x2, y2, spreadMethod):
     ),
 )
 def test_create_radial_gradient(id, r, cx, cy, fx, fy, spreadMethod):
-    radial = RadialGradient(
-        id, r, (cx, cy), (fx, fy), spreadMethod=spreadMethod
-    )
+    radial = RadialGradient(id, r, (cx, cy), (fx, fy), spreadMethod=spreadMethod)
 
     expected = dict(
         id=id,
@@ -116,7 +112,6 @@ def test_create_gradient(gradient):
 
     space = linspace(0, 1, len(colors))
     for i, (c, l) in enumerate(zip(colors, space)):
-
         expected = {
             "offset": f"{l:.0%}",
             "stop-color": c,

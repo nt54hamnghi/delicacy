@@ -1,21 +1,22 @@
 import random
-from itertools import product, repeat
+from itertools import product
+from itertools import repeat
 from random import Random
 from unittest import mock
 
 import pytest
-from delicacy.saturn.saturn import DIONE_OPTIONS
 
-from delicacy.saturn.helpers import (
-    fade,
-    linear_plane,
-    make_shape,
-    rand_plane,
-    sorted_randspace,
-    spreadit,
-)
+from delicacy.saturn.helpers import fade
+from delicacy.saturn.helpers import linear_plane
+from delicacy.saturn.helpers import make_shape
+from delicacy.saturn.helpers import rand_plane
+from delicacy.saturn.helpers import sorted_randspace
+from delicacy.saturn.helpers import spreadit
+from delicacy.saturn.saturn import DIONE_OPTIONS
 from delicacy.svglib.elements.peripheral.transform import Transform
-from delicacy.svglib.elements.shapes import Circle, Path, Rectangle
+from delicacy.svglib.elements.shapes import Circle
+from delicacy.svglib.elements.shapes import Path
+from delicacy.svglib.elements.shapes import Rectangle
 from delicacy.svglib.utils.utils import linspace
 
 
@@ -107,9 +108,7 @@ class TestSpreadIt:
     )
     @mock.patch("delicacy.saturn.helpers.Random")
     def test_spread_it(self, mock_rng, k, spread, direction):
-        mock_rng.choices.side_effect = [direction] + list(
-            repeat(spread, times=k)
-        )
+        mock_rng.choices.side_effect = [direction] + list(repeat(spread, times=k))
         spr = tuple(spreadit(mock_rng, spread, k))
 
         assert len(spr) == k
@@ -140,9 +139,7 @@ class TestSpreadIt:
 )
 def test_fade(option, num, scale, location):
     elm = make_shape(option=option)
-    faded = fade(
-        random, elm, "black", scale, num=num, location=location, rotate=90
-    )
+    faded = fade(random, elm, "black", scale, num=num, location=location, rotate=90)
 
     assert len(faded.base) == num + 1
 

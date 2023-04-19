@@ -37,9 +37,7 @@ def test_layer_names_converted_to_tuple(collection_dir):
     ),
     ids=("passed", "default"),
 )
-def test_create_collection(
-    layer_names, expected, collection_dir, layer_paths
-):
+def test_create_collection(layer_names, expected, collection_dir, layer_paths):
     if layer_names is None:
         cat = Collection("Cat", collection_dir)
     else:

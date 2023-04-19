@@ -1,18 +1,20 @@
-from itertools import count, cycle
+from itertools import count
+from itertools import cycle
 from random import Random
-from typing import Callable, Iterator, TypeAlias, TypeVar
+from typing import Callable
+from typing import Iterator
+from typing import TypeAlias
+from typing import TypeVar
 
 from cytoolz import curry
 
-from delicacy.svglib.colors.hsv import (
-    HUE_MAX,
-    HUE_RANGE,
-    SAT_MAX,
-    SAT_MIN,
-    VAL_MAX,
-    VAL_MIN,
-    HSVColor,
-)
+from delicacy.svglib.colors.hsv import HSVColor
+from delicacy.svglib.colors.hsv import HUE_MAX
+from delicacy.svglib.colors.hsv import HUE_RANGE
+from delicacy.svglib.colors.hsv import SAT_MAX
+from delicacy.svglib.colors.hsv import SAT_MIN
+from delicacy.svglib.colors.hsv import VAL_MAX
+from delicacy.svglib.colors.hsv import VAL_MIN
 from delicacy.svglib.utils.utils import linspace
 
 # NOTE: use yield from in all palette functions
@@ -114,9 +116,7 @@ def segment(n_segments: int, num: int, rng: Random) -> ColorIter:
     sats = rng.choices(range(70, SAT_MAX - 10), k=num)
     vals = rng.choices(range(70, VAL_MAX + 1), k=num)
 
-    yield from (
-        HSVColor(hue, sat, val) for hue, sat, val in zip(hues, sats, vals)
-    )
+    yield from (HSVColor(hue, sat, val) for hue, sat, val in zip(hues, sats, vals))
 
 
 # re-assign __name__ for debugging purposes

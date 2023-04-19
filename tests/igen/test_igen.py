@@ -2,7 +2,9 @@ import hashlib
 import os
 from itertools import product
 from random import choices
-from string import ascii_letters, digits, punctuation
+from string import ascii_letters
+from string import digits
+from string import punctuation
 from unittest import mock
 
 import pytest
@@ -42,9 +44,7 @@ def test_create_igen(img_gen):
 def test_igen_hash(img_gen, key):
     igen_hash = img_gen._hash(key, "")
 
-    expected_hash = (
-        "36f028580bb02cc8272a9a020f4200e346e276ae664e45ee80745574e2f5ab80"
-    )
+    expected_hash = "36f028580bb02cc8272a9a020f4200e346e276ae664e45ee80745574e2f5ab80"
 
     assert isinstance(igen_hash, BitArray)
     assert igen_hash.hex == expected_hash
@@ -76,7 +76,6 @@ IMAGES_COUNT = 10  # numbers of images in each layer
 
 @pytest.fixture
 def imagined(tmp_path):
-
     for layer in range(LAYERS_COUNT):
         new_path = tmp_path / f"layers#{layer}"
         new_path.mkdir()
@@ -89,7 +88,6 @@ def imagined(tmp_path):
 
 @pytest.mark.parametrize("layer", range(LAYERS_COUNT), ids=range(10))
 def test_igen_pick(layer, img_gen, imagined):
-
     layer_path = imagined / f"layers#{layer}"
     hash_value = img_gen._hash("test")
 

@@ -2,9 +2,11 @@ from collections.abc import Sequence
 from itertools import chain
 from typing import TypeVar
 
-from attrs import define, field
+from attrs import define
+from attrs import field
 from attrs.validators import in_
-from lxml.etree import Element, SubElement
+from lxml.etree import Element
+from lxml.etree import SubElement
 
 from delicacy.svglib.elements.element import SVGElement
 from delicacy.svglib.utils.utils import linspace

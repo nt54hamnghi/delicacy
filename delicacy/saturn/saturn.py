@@ -2,30 +2,30 @@ from collections.abc import Sequence
 from hashlib import sha3_512
 from itertools import product
 from random import Random
-from typing import Callable, TypeAlias, TypeVar
+from typing import Callable
+from typing import TypeAlias
+from typing import TypeVar
 
 from bitstring import BitArray
 from cytoolz.itertoolz import partition
 from lxml.etree import _Element
 
-from delicacy.saturn.helpers import (
-    fade,
-    generate_id,
-    make_shape,
-    rand_plane,
-    sorted_randspace,
-)
-from delicacy.svglib.colors.palette import (
-    PREFERRED_PALETTES,
-    PaletteFunc,
-    PaletteGenerator,
-)
+from delicacy.saturn.helpers import fade
+from delicacy.saturn.helpers import generate_id
+from delicacy.saturn.helpers import make_shape
+from delicacy.saturn.helpers import rand_plane
+from delicacy.saturn.helpers import sorted_randspace
+from delicacy.svglib.colors.palette import PaletteFunc
+from delicacy.svglib.colors.palette import PaletteGenerator
+from delicacy.svglib.colors.palette import PREFERRED_PALETTES
 from delicacy.svglib.elements.element import WrappingElement
-from delicacy.svglib.elements.peripheral.style import Fill, Stroke
+from delicacy.svglib.elements.peripheral.style import Fill
+from delicacy.svglib.elements.peripheral.style import Stroke
 from delicacy.svglib.elements.peripheral.transform import Transform
 from delicacy.svglib.elements.shapes import Line
 from delicacy.svglib.elements.use import Use
-from delicacy.svglib.utils.utils import get_canvas, linspace
+from delicacy.svglib.utils.utils import get_canvas
+from delicacy.svglib.utils.utils import linspace
 
 Canvas: TypeAlias = _Element
 MakerFunc: TypeAlias = Callable[..., Canvas]
@@ -48,7 +48,6 @@ def Reah(
     x_density: int = 8,
     y_density: int = 32,
 ) -> Canvas:
-
     canvas = get_canvas(width, height)
 
     # proportional scale with respect to the standard frame of 512 x 512
@@ -59,10 +58,8 @@ def Reah(
         n_lines = rng.randint(1, x_density)
         x_space = sorted_randspace(rng, 0, width, n_lines * 2)
 
-        for (start, end) in partition(2, x_space):
-            stroke = Stroke(
-                rng.choice(colors), width=linewidth, linecap="round"
-            )
+        for start, end in partition(2, x_space):
+            stroke = Stroke(rng.choice(colors), width=linewidth, linecap="round")
             line = Line.make_line(start, y, end, y)
             line.add_style(stroke)
             canvas.append(line.base)
@@ -82,7 +79,6 @@ def Dione(
     x_density: int = 6,
     y_density: int = 12,
 ) -> Canvas:
-
     canvas = get_canvas(width, height)
 
     # proportional scale with respect to the standard frame of 512 x 512
@@ -91,7 +87,6 @@ def Dione(
 
     for y in linspace(0, width, y_density):
         for x in sorted_randspace(rng, 0, height, x_density):
-
             faded = fade(
                 rng=rng,
                 element=make_shape(option=rng.choice(DIONE_OPTIONS)),

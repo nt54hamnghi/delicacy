@@ -40,7 +40,6 @@ def test_rotate(transform, angle, x, y):
 
 
 def test_rotate_fail(transform):
-
     with pytest.raises(ValueError):
         transform.rotate(45, 10)
 
@@ -78,12 +77,7 @@ def test_matrix(transform):
 
 def test_chained_ops(transform):
     transform = (
-        transform.translate(5)
-        .rotate(45)
-        .scale(0.5)
-        .skewX(4)
-        .skewY(4)
-        .matrix(*range(6))
+        transform.translate(5).rotate(45).scale(0.5).skewX(4).skewY(4).matrix(*range(6))
     )
 
     assert isinstance(transform, Transform)

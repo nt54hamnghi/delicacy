@@ -16,7 +16,6 @@ class Use(ExtendedElement):
     size: Size | None = None
 
     def __attrs_post_init__(self) -> None:
-
         self.href = "#" + self.href
 
         tags = "href x y".split()

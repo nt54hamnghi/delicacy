@@ -1,23 +1,21 @@
 from collections.abc import Iterator
 from hashlib import sha3_256
-from itertools import product, repeat
+from itertools import product
+from itertools import repeat
 from random import Random
 
-from delicacy.svglib.elements.element import (
-    ExtendedElement,
-    WrappingElement,
-    defs,
-    group,
-)
+from delicacy.svglib.elements.element import defs
+from delicacy.svglib.elements.element import ExtendedElement
+from delicacy.svglib.elements.element import group
+from delicacy.svglib.elements.element import WrappingElement
 from delicacy.svglib.elements.peripheral.point import Point
-from delicacy.svglib.elements.peripheral.style import Fill, Stroke
+from delicacy.svglib.elements.peripheral.style import Fill
+from delicacy.svglib.elements.peripheral.style import Stroke
 from delicacy.svglib.elements.peripheral.transform import Transform
-from delicacy.svglib.elements.shapes import (
-    Circle,
-    ETriangle,
-    Rectangle,
-    XShape,
-)
+from delicacy.svglib.elements.shapes import Circle
+from delicacy.svglib.elements.shapes import ETriangle
+from delicacy.svglib.elements.shapes import Rectangle
+from delicacy.svglib.elements.shapes import XShape
 from delicacy.svglib.elements.use import Use
 from delicacy.svglib.utils.utils import linspace
 
@@ -32,12 +30,10 @@ def generate_id(*args):
 def sorted_randspace(
     rng: Random, start: float = 0, end: float = 512, k: int = 10
 ) -> Iterator[int]:
-
     start, end = int(start), int(end)
     min_space = (end - start) // k
     yield from (
-        rng.randint(start, (start := start + min_space))  # noqa F481
-        for _ in range(k)
+        rng.randint(start, (start := start + min_space)) for _ in range(k)  # noqa F481
     )
 
 

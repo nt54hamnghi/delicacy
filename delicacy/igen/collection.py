@@ -1,9 +1,12 @@
 import os
-from collections.abc import Iterable, Iterator
+from collections.abc import Iterable
+from collections.abc import Iterator
 from os import PathLike
-from typing import AnyStr, TypeAlias
+from typing import AnyStr
+from typing import TypeAlias
 
-from attrs import field, frozen
+from attrs import field
+from attrs import frozen
 
 PathType: TypeAlias = PathLike | AnyStr
 

@@ -5,7 +5,9 @@ from typing import NamedTuple
 
 from cytoolz.itertoolz import take
 from lxml import etree
-from lxml.etree import Element, _Element, tostring
+from lxml.etree import _Element
+from lxml.etree import Element
+from lxml.etree import tostring
 from PIL import Image as PILImange
 from wand import image as WandImage
 
@@ -15,9 +17,7 @@ class Size(NamedTuple):
     height: float
 
 
-def get_canvas(
-    width: float = 512, height: float = 512, **kwds: str
-) -> _Element:
+def get_canvas(width: float = 512, height: float = 512, **kwds: str) -> _Element:
     tag = dict(
         width=str(width),
         height=str(height),
@@ -47,9 +47,7 @@ def eprint(element: _Element, **kwds) -> None:
     print(msg, **kwds)
 
 
-def materialize(
-    canvas: _Element, background: str | None = None
-) -> WandImage.Image:
+def materialize(canvas: _Element, background: str | None = None) -> WandImage.Image:
     blob = tostring(canvas)
     return WandImage.Image(blob=blob, format="svg", background=background)
 

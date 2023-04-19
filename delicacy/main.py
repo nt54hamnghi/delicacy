@@ -1,7 +1,8 @@
 from enum import Enum
 from io import BytesIO
 
-from fastapi import FastAPI, Query
+from fastapi import FastAPI
+from fastapi import Query
 from fastapi.responses import Response
 
 from delicacy.config import COLLECTION_DIR
@@ -48,7 +49,6 @@ async def make(
     phrase: str = Query(max_length=32),
     theme: ThemeEnum = ThemeEnum.Dark,
 ):
-
     try:
         maker = MakerDict[maker_type.name]
     except KeyError:

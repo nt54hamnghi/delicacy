@@ -2,11 +2,11 @@ FROM python:3.11.2-slim-bullseye as poetry-build
 
 # prevent poetry from create a virtual environment
 ENV POETRY_VIRTUALENVS_CREATE=false
-ENV POETRY_VERSION=1.3.2 
+ENV POETRY_VERSION=1.3.2
 
 # Do not check PyPI for a new version of pip
-ENV PIP_DISABLE_PIP_VERSION_CHECK=on  
-ENV PIP_DEFAULT_TIMEOUT=100 
+ENV PIP_DISABLE_PIP_VERSION_CHECK=on
+ENV PIP_DEFAULT_TIMEOUT=100
 ENV PIP_NO_CACHE_DIR=off
 
 # system setup:

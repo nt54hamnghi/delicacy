@@ -1,13 +1,14 @@
 import pytest
-from lxml.etree import Element, _Element, tostring
+from lxml.etree import _Element
+from lxml.etree import Element
+from lxml.etree import tostring
 
-from delicacy.svglib.elements.element import (
-    ExtendedElement,
-    SVGElement,
-    WrappingElement,
-    wraps,
-)
-from delicacy.svglib.elements.peripheral.style import Fill, Stroke
+from delicacy.svglib.elements.element import ExtendedElement
+from delicacy.svglib.elements.element import SVGElement
+from delicacy.svglib.elements.element import WrappingElement
+from delicacy.svglib.elements.element import wraps
+from delicacy.svglib.elements.peripheral.style import Fill
+from delicacy.svglib.elements.peripheral.style import Stroke
 from delicacy.svglib.elements.peripheral.transform import Transform
 
 
@@ -174,7 +175,6 @@ class TestWrappingElement:
             assert c.base is w
 
     def test_call_with_kwds(self, tag, childs):
-
         attrib = dict(id="id", name="name")
         wrap = WrappingElement(tag)
         wrap(*childs, **attrib)
