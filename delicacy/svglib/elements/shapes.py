@@ -121,7 +121,7 @@ class Polygon(ExtendedElement):
     def __attrs_post_init__(self) -> None:
         points = " ".join("{},{}".format(*p) for p in self.points)
         # mypy can't understand that attrs injects __init__
-        self._element = Element("polygon", points=points)  # type: ignore
+        self._element = Element("polygon", points=points)
 
 
 @define
