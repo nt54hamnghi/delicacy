@@ -57,7 +57,7 @@ def relative(func: Callable[..., str], *args, **kwds):
 @define
 class Path(ExtendedElement):
     def __attrs_post_init__(self) -> None:
-        self._element = Element("path", d="")  # type: ignore
+        self._element = Element("path", d="")
 
     @property
     def d(self):
