@@ -66,7 +66,7 @@ def test_igen_hash_with_arbitrary_data(img_gen, data):
 
 def test_generate_max_length(img_gen):
     with pytest.raises(ValueError):
-        img_gen.generate("-" * 33)
+        img_gen.generate("-" * 129)
 
 
 # For a imagined/mocked file system

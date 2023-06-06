@@ -62,7 +62,7 @@ def get_theme(theme: ThemeEnum):
 @app.get("/make/{maker_type}")
 async def make(
     maker_type: MakerEnum,
-    phrase: str = Query(max_length=32),
+    phrase: str = Query(max_length=128),
     theme: ThemeEnum = ThemeEnum.Dark,
 ):
     try:
