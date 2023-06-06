@@ -63,13 +63,13 @@ class chainable:
         self.managed_updater = None
 
     def __set_name__(self, owner: type, name: str) -> None:
-        ups = valfilter(lambda x: isinstance(x, _updater), owner.__dict__)
+        ups: dict = valfilter(lambda x: isinstance(x, _updater), owner.__dict__)
 
         if len(ups) != 1:
             msg = "each chainable class has one and only one updater"
             raise ValueError(msg)
 
-        self.managed_updater = tuple(ups.values())[0]
+        self.managed_updater = ups.values().__iter__().__next__()
 
     def __set__(self, instance, value) -> NoReturn:
         raise AttributeError("setter not available for chained methods")
