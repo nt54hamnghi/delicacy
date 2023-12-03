@@ -14,7 +14,7 @@ decorator = "5.1.*"
 cytoolz = "0.12.*"
 fastapi = "0.96.*"
 lxml = "4.9.*"
-Pillow = "9.3.*"
+Pillow = "10.1.*"
 Wand = "0.6.10"
 uvicorn = "^0.20.0"
 
@@ -65,12 +65,12 @@ ignore_missing_imports = true
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[poetry.run.script]
-# scripts for developments (mimic package.json)
-build = 'poetry build'
-cov = 'coverage run --branch -m pytest && coverage report --skip-empty --show-missing'
-dev = 'uvicorn delicacy.main:app --reload'
-test = 'pytest'
-test-verbose = 'pytest -vs'
-test-lastfail = 'pytest --lf'
-test-debug = 'pytest -x --pdb'
+# [poetry.run.script]
+# # scripts for developments (mimic package.json)
+# build = 'poetry build'
+# cov = 'coverage run --branch -m pytest && coverage report --skip-empty --show-missing'
+# dev = 'uvicorn delicacy.main:app --reload'
+# test = 'pytest'
+# test-verbose = 'pytest -vs'
+# test-lastfail = 'pytest --lf'
+# test-debug = 'pytest -x --pdb'
